@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/qt/qml/PipeSightConsole">
-    <file alias="qmldir">C:/Users/runyu/Desktop/workspace/PipeSightConsole/build-codex/PipeSightConsole/qmldir</file>
-  </qresource>
-</RCC>
-

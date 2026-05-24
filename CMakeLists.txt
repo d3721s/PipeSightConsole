@@ -109,12 +109,12 @@ set_target_properties(appPipeSightConsole PROPERTIES
     MACOSX_BUNDLE TRUE
 )
 
-# Android packaging hooks (filled in when targeting Android in Qt Creator)
-if (ANDROID)
-    set_target_properties(appPipeSightConsole PROPERTIES
-        QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android"
-    )
-endif()
+## Android packaging hooks (filled in when targeting Android in Qt Creator)
+#if (ANDROID)
+#    set_target_properties(appPipeSightConsole PROPERTIES
+#        QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android"
+#    )
+#endif()
 
 install(TARGETS appPipeSightConsole
     BUNDLE  DESTINATION .
