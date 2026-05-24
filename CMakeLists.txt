@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS
+find_package(Qt6 6.10 REQUIRED COMPONENTS
     Quick
     QuickControls2
     Network
@@ -15,7 +15,7 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS
     Concurrent
 )
 
-qt_standard_project_setup(REQUIRES 6.5)
+qt_standard_project_setup(REQUIRES 6.10)
 
 # --- C++ sources -----------------------------------------------------------
 set(COMM_SOURCES
