@@ -5,12 +5,12 @@ import QtQuick.Layouts
 
 ApplicationWindow {
     id: root
+    readonly property bool isAndroid: Qt.platform.os === "android"
+
     width: 1280
-    height: 800
-    minimumWidth: 1280
-    maximumWidth: 1280
-    minimumHeight: 800
-    maximumHeight: 800
+    height: 720
+    minimumWidth: isAndroid ? 0 : 1024
+    minimumHeight: isAndroid ? 0 : 640
     visible: true
     title: qsTr("PipeSight Console")
 
@@ -24,9 +24,10 @@ ApplicationWindow {
             Label {
                 text: qsTr("PipeSight 管道检测控制台")
                 font.pixelSize: 18
+                elide: Text.ElideRight
+                Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
             }
-            Item { Layout.fillWidth: true }
             // Placeholder connection indicators. Wire to device states via VMs later.
             RowLayout {
                 spacing: 8

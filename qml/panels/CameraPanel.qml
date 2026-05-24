@@ -6,49 +6,42 @@ import PipeSightConsole
 Item {
     id: panel
     readonly property int controlButtonHeight: 48
+    readonly property int controlPanelWidth: 230
+    readonly property int controlSpacing: 8
 
-    RowLayout {
+    Item {
         anchors.fill: parent
         anchors.margins: 4
-        spacing: 4
 
-        // Live video on the left — keep a fixed aspect ratio (16:9) and
-        // scale to the largest size that fits the available cell.
         Item {
             id: videoFrame
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.minimumWidth: 0
-
-            readonly property real aspect: 16/9
-            readonly property real targetH: Math.min(height, width / aspect)
-            readonly property real targetW: targetH * aspect
-            readonly property real verticalInset: Math.max(0, (height - targetH) / 2)
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.right: controlsPanel.left
+            anchors.rightMargin: 6
 
             VideoView {
                 id: video
-                anchors.centerIn: parent
-                width: videoFrame.targetW
-                height: videoFrame.targetH
+                anchors.fill: parent
                 source: CameraViewModel.streamUrl
             }
         }
 
-        // Right-side stacked controls: 变焦 / 前后摄 / 录像·拍照 / 云台
+        // Right-side controls stay fixed; only the video area resizes.
         ColumnLayout {
-            Layout.preferredWidth: 220
-            Layout.minimumWidth: 220
-            Layout.maximumWidth: 220
-            Layout.fillHeight: true
-            Layout.topMargin: videoFrame.verticalInset
-            Layout.bottomMargin: videoFrame.verticalInset
-            spacing: 8
+            id: controlsPanel
+            width: panel.controlPanelWidth
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            spacing: panel.controlSpacing
 
             // Row 1: 变焦
             GroupBox {
                 title: qsTr("变焦")
                 Layout.fillWidth: true
-                Layout.preferredHeight: 84
+                Layout.preferredHeight: 76
 
                 RowLayout {
                     anchors.fill: parent
@@ -70,7 +63,7 @@ Item {
             GroupBox {
                 title: qsTr("前后摄")
                 Layout.fillWidth: true
-                Layout.preferredHeight: 144
+                Layout.preferredHeight: 132
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -102,7 +95,7 @@ Item {
             GroupBox {
                 title: qsTr("录像 / 拍照")
                 Layout.fillWidth: true
-                Layout.preferredHeight: 144
+                Layout.preferredHeight: 132
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -125,12 +118,12 @@ Item {
                 }
             }
 
-            // Row 4: 云台控制 (kept compact)
+            // Row 4: 云台控制
             GroupBox {
                 title: qsTr("云台控制")
                 Layout.fillWidth: true
-                Layout.preferredHeight: 220
                 Layout.fillHeight: true
+                Layout.minimumHeight: 156
 
                 GridLayout {
                     anchors.fill: parent
@@ -152,7 +145,6 @@ Item {
                     Item {}
                 }
             }
-
         }
     }
 }
