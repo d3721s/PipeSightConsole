@@ -27,8 +27,13 @@ ApplicationWindow {
                 Layout.alignment: Qt.AlignVCenter
             }
             Item { Layout.fillWidth: true }
-            // Placeholder connection indicator. Wire to TcpClient state via VM later.
-            ConnectionIndicator { state: "connected" }
+            // Placeholder connection indicators. Wire to device states via VMs later.
+            RowLayout {
+                spacing: 8
+                ConnectionIndicator { deviceName: qsTr("小车") }
+                ConnectionIndicator { deviceName: qsTr("摄像头") }
+                ConnectionIndicator { deviceName: qsTr("双目") }
+            }
         }
     }
 
