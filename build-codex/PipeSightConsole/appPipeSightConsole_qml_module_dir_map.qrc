@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="/qt/qml/PipeSightConsole">C:/Users/runyu/Desktop/workspace/PipeSightConsole/build-codex/PipeSightConsole</file>
+
+  </qresource>
+</RCC>

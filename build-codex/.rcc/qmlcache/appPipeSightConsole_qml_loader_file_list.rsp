@@ -1,0 +1,15 @@
+--resource
+C:/Users/runyu/Desktop/workspace/PipeSightConsole/build-codex/.qt/rcc/qmake_PipeSightConsole.qrc
+--resource
+C:/Users/runyu/Desktop/workspace/PipeSightConsole/build-codex/.qt/rcc/appPipeSightConsole_raw_qml_0.qrc
+/qt/qml/PipeSightConsole/Main.qml
+/qt/qml/PipeSightConsole/CameraPanel.qml
+/qt/qml/PipeSightConsole/LaserPanel.qml
+/qt/qml/PipeSightConsole/VehicleControlPanel.qml
+/qt/qml/PipeSightConsole/VehicleInfoPanel.qml
+/qt/qml/PipeSightConsole/OsdPanel.qml
+/qt/qml/PipeSightConsole/ConfigPanel.qml
+/qt/qml/PipeSightConsole/AdvancedPanel.qml
+/qt/qml/PipeSightConsole/Joystick.qml
+/qt/qml/PipeSightConsole/ConnectionIndicator.qml
+/qt/qml/PipeSightConsole/VideoView.qml

@@ -1,0 +1,10 @@
+-I
+C:/Users/runyu/Desktop/workspace/PipeSightConsole/build-codex
+-I
+C:/Qt/6.8.3/mingw_64/qml
+--resource
+C:/Users/runyu/Desktop/workspace/PipeSightConsole/build-codex/.qt/rcc/qmake_PipeSightConsole.qrc
+--resource
+C:/Users/runyu/Desktop/workspace/PipeSightConsole/build-codex/.qt/rcc/appPipeSightConsole_raw_qml_0.qrc
+--module
+PipeSightConsole

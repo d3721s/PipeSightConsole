@@ -1,0 +1,57 @@
+#pragma once
+
+#include <QObject>
+#include <QString>
+
+namespace pipesight::services {
+
+/**
+ * Recording configuration + lifecycle.
+ *
+ * Owns the writer (Qt Multimedia QMediaRecorder or FFmpeg-based) and
+ * exposes file/segment policy. Snapshots also flow through here so that
+ * markers can reference the file timestamp/segment.
+ */
+class RecordingService : public QObject
+{
+    Q_OBJECT
+public:
+    enum class Codec { H264, H265, MJPEG };
+    Q_ENUM(Codec)
+
+    explicit RecordingService(QObject *parent = nullptr);
+    ~RecordingService() override;
+
+    bool    isRecording()        const { return recording_; }
+    QString storagePath()        const { return storagePath_; }
+    int     segmentMinutes()     const { return segmentMinutes_; }
+    bool    cyclicEnabled()      const { return cyclic_; }
+
+public slots:
+    void startRecording();
+    void stopRecording();
+    void takeSnapshot();   // saves a still from active video into storagePath_
+
+    void setResolution(int width, int height);
+    void setCodec(Codec c);
+    void setSegmentMinutes(int minutes);
+    void setStoragePath(const QString &path);
+    void setCyclicEnabled(bool on);
+
+signals:
+    void recordingStateChanged(bool on);
+    void snapshotSaved(const QString &filePath);
+    void segmentRolled(const QString &filePath);
+    void errorOccurred(const QString &msg);
+
+private:
+    bool    recording_       = false;
+    QString storagePath_;
+    int     segmentMinutes_  = 30;
+    bool    cyclic_          = true;
+    int     width_  = 1920;
+    int     height_ = 1080;
+    Codec   codec_  = Codec::H264;
+};
+
+} // namespace pipesight::services
