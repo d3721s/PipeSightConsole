@@ -104,6 +104,13 @@ target_link_libraries(appPipeSightConsole PRIVATE
     Qt6::Concurrent
 )
 
+if (ANDROID)
+    target_link_options(appPipeSightConsole PRIVATE
+        "-Wl,-z,max-page-size=16384"
+        "-Wl,-z,common-page-size=16384"
+    )
+endif()
+
 set_target_properties(appPipeSightConsole PROPERTIES
     WIN32_EXECUTABLE TRUE
     MACOSX_BUNDLE TRUE
