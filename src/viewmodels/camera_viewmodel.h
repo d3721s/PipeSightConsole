@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QString>
 #include <QUrl>
+#include <QVariantMap>
 #include <QtQmlIntegration/qqmlintegration.h>
 #include "services/camera_service.h"
 
@@ -26,7 +27,6 @@ public:
     int  activeChannelInt() const { return static_cast<int>(service_.activeChannel()); }
     bool recording() const { return recording_; }
 
-    // PTZ controls (called from QML buttons / joystick)
     Q_INVOKABLE void pan(qreal dx, qreal dy)  { service_.pan(dx, dy); }
     Q_INVOKABLE void zoom(qreal delta)         { service_.zoom(delta); }
     Q_INVOKABLE void switchChannel(int channel)
@@ -37,19 +37,22 @@ public:
     Q_INVOKABLE void stopRecording();
     Q_INVOKABLE void snapshot();
 
-    Q_INVOKABLE void configureCamera(int channel, const QString &ip,
-                                     const QString &main,
-                                     const QString &sub,
-                                     const QString &third)
-    {
-        service_.configureCamera(static_cast<services::CameraService::Channel>(channel),
-                                 ip, main, sub, third);
-    }
+    Q_INVOKABLE void configureCamera(int channel,
+                                     const QString &username,
+                                     const QString &password,
+                                     const QString &ip,
+                                     int port,
+                                     int rtspChannel,
+                                     int subtype);
+
+    Q_INVOKABLE QVariantMap cameraConfig(int channel) const;
+    Q_INVOKABLE QString     cameraStreamUrl(int channel) const;
 
 signals:
     void streamUrlChanged();
     void activeChannelChanged();
     void recordingChanged();
+    void cameraConfigChanged(int channel);
 
 private:
     services::CameraService service_;

@@ -1,11 +1,15 @@
 #include "camera_service.h"
 #include "comm/connection_manager.h"
 #include "comm/tcp_client.h"
+#include "data/app_settings.h"
+
+#include <QUrlQuery>
 
 namespace pipesight::services {
 
 using comm::ConnectionManager;
 using comm::TcpClient;
+using pipesight::data::AppSettings;
 
 CameraService::CameraService(QObject *parent)
     : QObject(parent)
@@ -13,13 +17,21 @@ CameraService::CameraService(QObject *parent)
 {
     connect(ptzClient_, &TcpClient::frameReceived,
             this, &CameraService::onFrameReceived);
+
+    frontCfg_ = loadConfig(Channel::Front);
+    rearCfg_  = loadConfig(Channel::Rear);
 }
 
 CameraService::~CameraService() = default;
 
 QUrl CameraService::streamUrl(Channel ch) const
 {
-    return ch == Channel::Front ? frontUrl_ : rearUrl_;
+    return buildUrl(ch == Channel::Front ? frontCfg_ : rearCfg_);
+}
+
+CameraConfig CameraService::config(Channel ch) const
+{
+    return ch == Channel::Front ? frontCfg_ : rearCfg_;
 }
 
 void CameraService::pan(qreal dx, qreal dy)
@@ -48,21 +60,67 @@ void CameraService::switchChannel(Channel ch)
     emit activeChannelChanged(ch);
 }
 
-void CameraService::setStreamUrl(Channel ch, const QUrl &rtsp)
+void CameraService::configureCamera(Channel ch, const CameraConfig &cfg)
 {
-    (ch == Channel::Front ? frontUrl_ : rearUrl_) = rtsp;
-    emit streamUrlChanged(ch, rtsp);
+    (ch == Channel::Front ? frontCfg_ : rearCfg_) = cfg;
+    saveConfig(ch, cfg);
+    emit configChanged(ch);
+    emit streamUrlChanged(ch, buildUrl(cfg));
 }
 
-void CameraService::configureCamera(Channel ch, const QString &ip,
-                                    const QString &mainStream,
-                                    const QString &subStream,
-                                    const QString &thirdStream)
+QUrl CameraService::buildUrl(const CameraConfig &cfg)
 {
-    // TODO: persist via AppSettings; here we just compose the main RTSP URL
-    Q_UNUSED(subStream); Q_UNUSED(thirdStream);
-    const QString url = QStringLiteral("rtsp://%1/%2").arg(ip, mainStream);
-    setStreamUrl(ch, QUrl(url));
+    if (!cfg.isComplete()) return {};
+
+    QUrl url;
+    url.setScheme(QStringLiteral("rtsp"));
+    if (!cfg.username.isEmpty()) {
+        url.setUserName(cfg.username);
+        if (!cfg.password.isEmpty())
+            url.setPassword(cfg.password);
+    }
+    url.setHost(cfg.ip);
+    url.setPort(cfg.port);
+    url.setPath(QStringLiteral("/cam/realmonitor"));
+
+    QUrlQuery q;
+    q.addQueryItem(QStringLiteral("channel"), QString::number(cfg.channel));
+    q.addQueryItem(QStringLiteral("subtype"), QString::number(cfg.subtype));
+    url.setQuery(q);
+    return url;
+}
+
+QString CameraService::settingsPrefix(Channel ch)
+{
+    return ch == Channel::Front
+        ? QStringLiteral("camera/front/")
+        : QStringLiteral("camera/rear/");
+}
+
+CameraConfig CameraService::loadConfig(Channel ch) const
+{
+    auto &s = AppSettings::instance();
+    const QString p = settingsPrefix(ch);
+    CameraConfig cfg;
+    cfg.username = s.value(p + QStringLiteral("username")).toString();
+    cfg.password = s.value(p + QStringLiteral("password")).toString();
+    cfg.ip       = s.value(p + QStringLiteral("ip")).toString();
+    cfg.port     = static_cast<quint16>(s.value(p + QStringLiteral("port"), 554).toUInt());
+    cfg.channel  = s.value(p + QStringLiteral("channel"), 1).toInt();
+    cfg.subtype  = s.value(p + QStringLiteral("subtype"), 0).toInt();
+    return cfg;
+}
+
+void CameraService::saveConfig(Channel ch, const CameraConfig &cfg) const
+{
+    auto &s = AppSettings::instance();
+    const QString p = settingsPrefix(ch);
+    s.setValue(p + QStringLiteral("username"), cfg.username);
+    s.setValue(p + QStringLiteral("password"), cfg.password);
+    s.setValue(p + QStringLiteral("ip"),       cfg.ip);
+    s.setValue(p + QStringLiteral("port"),     cfg.port);
+    s.setValue(p + QStringLiteral("channel"),  cfg.channel);
+    s.setValue(p + QStringLiteral("subtype"),  cfg.subtype);
 }
 
 void CameraService::onFrameReceived(quint8 type, const QByteArray &payload)

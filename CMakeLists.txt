@@ -60,6 +60,7 @@ set(QML_FILES
     qml/components/Joystick.qml
     qml/components/ConnectionIndicator.qml
     qml/components/VideoView.qml
+    qml/components/CameraConfigRow.qml
 )
 
 # Keep the QML source layout (qml/, qml/panels/, qml/components/) on disk,

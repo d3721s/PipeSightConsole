@@ -18,56 +18,24 @@ Item {
             width: parent.width
             spacing: 10
 
-            // ---- Camera 1 ----
-            GroupBox {
-                title: qsTr("摄像头 1(前摄)")
+            // ---- Camera 1 (前摄) ----
+            CameraConfigRow {
                 Layout.fillWidth: true
-                RowLayout {
-                    width: parent.width
-                    spacing: 10
-
-                    Label { text: qsTr("IP 地址") }
-                    TextField { id: cam1Ip;    Layout.preferredWidth: panel.cameraFieldWidth; Layout.preferredHeight: panel.fieldHeight; placeholderText: "192.168.1.10" }
-                    Label { text: qsTr("码流 1(主)") }
-                    TextField { id: cam1Main;  Layout.preferredWidth: panel.cameraFieldWidth; Layout.preferredHeight: panel.fieldHeight; placeholderText: "stream1" }
-                    Label { text: qsTr("码流 2(子)") }
-                    TextField { id: cam1Sub;   Layout.preferredWidth: panel.cameraFieldWidth; Layout.preferredHeight: panel.fieldHeight; placeholderText: "stream2" }
-                    Label { text: qsTr("码流 3(回传)") }
-                    TextField { id: cam1Third; Layout.preferredWidth: panel.cameraFieldWidth; Layout.preferredHeight: panel.fieldHeight; placeholderText: "stream3" }
-                    Item { Layout.fillWidth: true }
-                    Button {
-                        text: qsTr("应用")
-                        Layout.preferredWidth: panel.buttonWidth
-                        Layout.preferredHeight: panel.fieldHeight
-                        onClicked: ConfigViewModel.configureCamera(0, cam1Ip.text, cam1Main.text, cam1Sub.text, cam1Third.text)
-                    }
-                }
+                channel: 0
+                title: qsTr("摄像头 1(前摄)")
+                fieldHeight: panel.fieldHeight
+                compactFieldWidth: panel.compactFieldWidth
+                buttonWidth: panel.buttonWidth
             }
 
-            // ---- Camera 2 ----
-            GroupBox {
-                title: qsTr("摄像头 2(后摄)")
+            // ---- Camera 2 (后摄) ----
+            CameraConfigRow {
                 Layout.fillWidth: true
-                RowLayout {
-                    width: parent.width
-                    spacing: 10
-
-                    Label { text: qsTr("IP 地址") }
-                    TextField { id: cam2Ip;    Layout.preferredWidth: panel.cameraFieldWidth; Layout.preferredHeight: panel.fieldHeight; placeholderText: "192.168.1.11" }
-                    Label { text: qsTr("码流 1(主)") }
-                    TextField { id: cam2Main;  Layout.preferredWidth: panel.cameraFieldWidth; Layout.preferredHeight: panel.fieldHeight }
-                    Label { text: qsTr("码流 2(子)") }
-                    TextField { id: cam2Sub;   Layout.preferredWidth: panel.cameraFieldWidth; Layout.preferredHeight: panel.fieldHeight }
-                    Label { text: qsTr("码流 3(回传)") }
-                    TextField { id: cam2Third; Layout.preferredWidth: panel.cameraFieldWidth; Layout.preferredHeight: panel.fieldHeight }
-                    Item { Layout.fillWidth: true }
-                    Button {
-                        text: qsTr("应用")
-                        Layout.preferredWidth: panel.buttonWidth
-                        Layout.preferredHeight: panel.fieldHeight
-                        onClicked: ConfigViewModel.configureCamera(1, cam2Ip.text, cam2Main.text, cam2Sub.text, cam2Third.text)
-                    }
-                }
+                channel: 1
+                title: qsTr("摄像头 2(后摄)")
+                fieldHeight: panel.fieldHeight
+                compactFieldWidth: panel.compactFieldWidth
+                buttonWidth: panel.buttonWidth
             }
 
             // ---- Stereo ----
