@@ -42,11 +42,7 @@ Item {
                     title: qsTr("里程计标定")
                     Layout.fillWidth: true
                     RowLayout {
-                        Label {
-                            text: qsTr("自动标定将根据已知行进距离与累计里程自动计算修正系数。")
-                            Layout.fillWidth: true
-                            wrapMode: Label.WordWrap
-                        }
+                        Item { Layout.fillWidth: true }
                         Button {
                             text: qsTr("自动标定")
                             onClicked: AdvancedViewModel.calibrateOdometer()

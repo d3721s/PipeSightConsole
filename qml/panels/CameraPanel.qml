@@ -79,9 +79,8 @@ Item {
                     GroupBox {
                         title: qsTr("摄像头切换")
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 132
 
-                        ColumnLayout {
+                        RowLayout {
                             anchors.fill: parent
                             spacing: 6
 
@@ -111,9 +110,8 @@ Item {
                     GroupBox {
                         title: qsTr("操作")
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 132
 
-                        ColumnLayout {
+                        RowLayout {
                             anchors.fill: parent
                             spacing: 6
 
@@ -121,6 +119,7 @@ Item {
                                 text: CameraViewModel.recording ? qsTr("停止录像") : qsTr("开始录像")
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: panel.controlButtonHeight
+                                palette.buttonText: CameraViewModel.recording ? "#e53935" : palette.windowText
                                 onClicked: CameraViewModel.recording
                                             ? CameraViewModel.stopRecording()
                                             : CameraViewModel.startRecording()
