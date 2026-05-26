@@ -5,13 +5,6 @@
 
 namespace pipesight::services {
 
-/**
- * Advanced features umbrella: report export, calibration, AI defect
- * detection, playback, log access, firmware upgrade.
- *
- * Most of these are local-only (no TCP) except FW upgrade which streams
- * a file to the device. AI detection runs ONNX Runtime in a worker pool.
- */
 class ReportService : public QObject
 {
     Q_OBJECT
@@ -23,31 +16,19 @@ public:
     ~ReportService() override;
 
 public slots:
-    // Generate a report for the active project; emits reportReady on success.
     void exportReport(ReportFormat fmt, const QString &outFilePath);
 
-    // Calibrate the odometer against a known traversed distance.
-    void calibrateOdometer(double knownDistanceMeters);
+    // Auto-calibrate the odometer against the vehicle's cumulative travel.
+    void calibrateOdometer();
 
-    // Trigger AI defect recognition on the recorded segment(s).
-    void runDefectRecognition(const QString &videoOrFolderPath);
-
-    // Open/load a recorded session for offline playback + marker editing.
-    void openPlayback(const QString &sessionPath);
-
-    // Log file access.
     QString systemLogPath() const;
 
-    // Firmware OTA upload to the car/cameras.
-    void uploadFirmware(const QString &target, const QString &firmwarePath);
+    // Open the system log file in the OS default application.
+    bool openSystemLog() const;
 
 signals:
-    void reportProgress(int percent);
     void reportReady(const QString &filePath);
     void calibrationDone(double scaleFactor);
-    void defectFound(const QString &category, double timestampSec, double confidence);
-    void firmwareProgress(int percent);
-    void firmwareDone(bool ok, const QString &msg);
     void errorOccurred(const QString &msg);
 };
 

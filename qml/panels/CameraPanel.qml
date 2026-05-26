@@ -75,9 +75,9 @@ Item {
                         }
                     }
 
-                    // Row 2: 前后摄
+                    // Row 2: 摄像头切换
                     GroupBox {
-                        title: qsTr("前后摄")
+                        title: qsTr("摄像头切换")
                         Layout.fillWidth: true
                         Layout.preferredHeight: 132
 
@@ -107,9 +107,9 @@ Item {
                         }
                     }
 
-                    // Row 3: 录像 / 拍照
+                    // Row 3: 操作
                     GroupBox {
-                        title: qsTr("录像 / 拍照")
+                        title: qsTr("操作")
                         Layout.fillWidth: true
                         Layout.preferredHeight: 132
 

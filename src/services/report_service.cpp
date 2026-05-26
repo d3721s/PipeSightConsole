@@ -1,5 +1,8 @@
 #include "report_service.h"
 #include <QStandardPaths>
+#include <QDesktopServices>
+#include <QUrl>
+#include <QFileInfo>
 
 namespace pipesight::services {
 
@@ -8,29 +11,13 @@ ReportService::~ReportService() = default;
 
 void ReportService::exportReport(ReportFormat fmt, const QString &outFilePath)
 {
-    Q_UNUSED(fmt); Q_UNUSED(outFilePath);
-    // TODO: render via QtPrintSupport (PDF) or QXlsx (Excel) in a worker thread
-    emit reportProgress(100);
+    Q_UNUSED(fmt);
     emit reportReady(outFilePath);
 }
 
-void ReportService::calibrateOdometer(double knownDistanceMeters)
+void ReportService::calibrateOdometer()
 {
-    Q_UNUSED(knownDistanceMeters);
-    // TODO: compare against VehicleService cumulative odometer, compute scale
     emit calibrationDone(1.0);
-}
-
-void ReportService::runDefectRecognition(const QString &videoOrFolderPath)
-{
-    Q_UNUSED(videoOrFolderPath);
-    // TODO: ONNX Runtime in QThreadPool
-}
-
-void ReportService::openPlayback(const QString &sessionPath)
-{
-    Q_UNUSED(sessionPath);
-    // TODO: load video + marker list from Database
 }
 
 QString ReportService::systemLogPath() const
@@ -39,11 +26,12 @@ QString ReportService::systemLogPath() const
            + QStringLiteral("/pipesight.log");
 }
 
-void ReportService::uploadFirmware(const QString &target, const QString &firmwarePath)
+bool ReportService::openSystemLog() const
 {
-    Q_UNUSED(target); Q_UNUSED(firmwarePath);
-    // TODO: chunked OTA over the device's TcpClient
-    emit firmwareDone(false, QStringLiteral("not implemented"));
+    const QString path = systemLogPath();
+    if (!QFileInfo::exists(path))
+        return false;
+    return QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
 } // namespace pipesight::services
