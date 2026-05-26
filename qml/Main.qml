@@ -57,15 +57,22 @@ ApplicationWindow {
 
         CameraPanel {}
         LaserPanel {}
-        // Vehicle tab combines info + control side by side
-        SplitView {
-            orientation: Qt.Horizontal
+        // Vehicle tab keeps left/right panes fixed; each pane scrolls vertically.
+        Item {
             VehicleInfoPanel {
-                SplitView.preferredWidth: 360
-                SplitView.minimumWidth: 360
-                SplitView.maximumWidth: 360
+                id: vehicleInfo
+                width: root.isAndroid ? 330 : 360
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
             }
-            VehicleControlPanel { SplitView.fillWidth: true }
+            VehicleControlPanel {
+                anchors.left: vehicleInfo.right
+                anchors.leftMargin: 8
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+            }
         }
         ConfigPanel {}
         AdvancedPanel {}
