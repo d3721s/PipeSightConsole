@@ -25,22 +25,24 @@ set(COMM_SOURCES
 )
 
 set(SERVICE_SOURCES
-    src/services/camera_service.h       src/services/camera_service.cpp
-    src/services/laser_service.h        src/services/laser_service.cpp
-    src/services/vehicle_service.h      src/services/vehicle_service.cpp
-    src/services/osd_service.h          src/services/osd_service.cpp
-    src/services/recording_service.h    src/services/recording_service.cpp
-    src/services/report_service.h       src/services/report_service.cpp
+    src/services/camera_service.h           src/services/camera_service.cpp
+    src/services/laser_service.h            src/services/laser_service.cpp
+    src/services/depth_camera_service.h     src/services/depth_camera_service.cpp
+    src/services/vehicle_service.h          src/services/vehicle_service.cpp
+    src/services/osd_service.h              src/services/osd_service.cpp
+    src/services/recording_service.h        src/services/recording_service.cpp
+    src/services/report_service.h           src/services/report_service.cpp
 )
 
 # ViewModels are QML-exposed types; declared as QML_ELEMENT in headers.
 set(VIEWMODEL_SOURCES
-    src/viewmodels/camera_viewmodel.h       src/viewmodels/camera_viewmodel.cpp
-    src/viewmodels/laser_viewmodel.h        src/viewmodels/laser_viewmodel.cpp
-    src/viewmodels/vehicle_viewmodel.h      src/viewmodels/vehicle_viewmodel.cpp
-    src/viewmodels/osd_viewmodel.h          src/viewmodels/osd_viewmodel.cpp
-    src/viewmodels/config_viewmodel.h       src/viewmodels/config_viewmodel.cpp
-    src/viewmodels/advanced_viewmodel.h     src/viewmodels/advanced_viewmodel.cpp
+    src/viewmodels/camera_viewmodel.h           src/viewmodels/camera_viewmodel.cpp
+    src/viewmodels/laser_viewmodel.h            src/viewmodels/laser_viewmodel.cpp
+    src/viewmodels/depth_camera_viewmodel.h     src/viewmodels/depth_camera_viewmodel.cpp
+    src/viewmodels/vehicle_viewmodel.h          src/viewmodels/vehicle_viewmodel.cpp
+    src/viewmodels/osd_viewmodel.h              src/viewmodels/osd_viewmodel.cpp
+    src/viewmodels/config_viewmodel.h           src/viewmodels/config_viewmodel.cpp
+    src/viewmodels/advanced_viewmodel.h         src/viewmodels/advanced_viewmodel.cpp
 )
 
 set(DATA_SOURCES
@@ -52,6 +54,7 @@ set(QML_FILES
     qml/Main.qml
     qml/panels/CameraPanel.qml
     qml/panels/LaserPanel.qml
+    qml/panels/DepthCameraPanel.qml
     qml/panels/VehicleControlPanel.qml
     qml/panels/VehicleInfoPanel.qml
     qml/panels/OsdPanel.qml
