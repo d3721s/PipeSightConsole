@@ -31,9 +31,11 @@ ApplicationWindow {
             // Placeholder connection indicators. Wire to device states via VMs later.
             RowLayout {
                 spacing: 8
-                ConnectionIndicator { deviceName: qsTr("小车") }
-                ConnectionIndicator { deviceName: qsTr("摄像头") }
-                ConnectionIndicator { deviceName: qsTr("双目") }
+                ConnectionIndicator { deviceName: qsTr("前置摄像头") }
+                ConnectionIndicator { deviceName: qsTr("后置摄像头") }
+                ConnectionIndicator { deviceName: qsTr("激光雷达") }
+                ConnectionIndicator { deviceName: qsTr("深度相机") }
+                ConnectionIndicator { deviceName: qsTr("移动底盘") }
             }
         }
     }
@@ -42,8 +44,9 @@ ApplicationWindow {
         id: tabs
         width: parent.width
         TabButton { text: qsTr("摄像头") }
-        TabButton { text: qsTr("激光/双目") }
-        TabButton { text: qsTr("小车") }
+        TabButton { text: qsTr("激光雷达") }
+        TabButton { text: qsTr("深度相机") }
+        TabButton { text: qsTr("移动底盘") }
         TabButton { text: qsTr("配置") }
         TabButton { text: qsTr("高级") }
     }
@@ -56,6 +59,7 @@ ApplicationWindow {
         currentIndex: tabs.currentIndex
 
         CameraPanel {}
+        LaserPanel {}
         LaserPanel {}
         // Vehicle tab keeps left/right panes fixed; each pane scrolls vertically.
         Item {

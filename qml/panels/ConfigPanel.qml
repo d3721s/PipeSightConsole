@@ -22,7 +22,7 @@ Item {
             CameraConfigRow {
                 Layout.fillWidth: true
                 channel: 0
-                title: qsTr("摄像头 1(前摄)")
+                title: qsTr("前置摄像头")
                 fieldHeight: panel.fieldHeight
                 compactFieldWidth: panel.compactFieldWidth
                 buttonWidth: panel.buttonWidth
@@ -32,7 +32,7 @@ Item {
             CameraConfigRow {
                 Layout.fillWidth: true
                 channel: 1
-                title: qsTr("摄像头 2(后摄)")
+                title: qsTr("后置摄像头")
                 fieldHeight: panel.fieldHeight
                 compactFieldWidth: panel.compactFieldWidth
                 buttonWidth: panel.buttonWidth

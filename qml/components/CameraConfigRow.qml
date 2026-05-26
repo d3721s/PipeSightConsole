@@ -61,7 +61,7 @@ GroupBox {
         Label { text: qsTr("IP") }
         TextField {
             id: ipField
-            Layout.preferredWidth: root.compactFieldWidth
+            Layout.preferredWidth: root.compactFieldWidth + 60
             Layout.preferredHeight: root.fieldHeight
             placeholderText: "ip"
         }
@@ -87,7 +87,7 @@ GroupBox {
             id: subBox
             Layout.preferredWidth: root.compactFieldWidth + 20
             Layout.preferredHeight: root.fieldHeight
-            model: [qsTr("主码流 (subtype=0)"), qsTr("辅码流 (subtype=1)")]
+            model: [qsTr("主码流"), qsTr("辅码流")]
         }
         Item { Layout.fillWidth: true }
         Button {

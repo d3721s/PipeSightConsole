@@ -26,14 +26,7 @@ CameraService::~CameraService() = default;
 
 QUrl CameraService::streamUrl(Channel ch) const
 {
-    const QUrl url = buildUrl(ch == Channel::Front ? frontCfg_ : rearCfg_);
-    if (url.isValid() && !url.isEmpty())
-        return url;
-
-    // Fallback demo streams when no RTSP is configured yet.
-    return ch == Channel::Front
-        ? QUrl(QStringLiteral("http://59.39.89.130:60901/tsfile/live/0001_1.m3u8?key=txiptv&playlive=1&authid=0"))
-        : QUrl(QStringLiteral("http://59.39.89.130:60901/tsfile/live/0003_1.m3u8?key=txiptv&playlive=1&authid=0"));
+    return buildUrl(ch == Channel::Front ? frontCfg_ : rearCfg_);
 }
 
 CameraConfig CameraService::config(Channel ch) const
