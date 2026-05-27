@@ -71,9 +71,7 @@ public final class NativeNotification {
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(context, 0, launchIntent, flags);
 
-        Notification.Builder builder = Build.VERSION.SDK_INT >= 26
-                ? new Notification.Builder(context, CHANNEL_ID)
-                : new Notification.Builder(context);
+        Notification.Builder builder = createBuilder(context);
 
         String safeTitle = title == null || title.length() == 0 ? "PipeSight Console" : title;
         String safeMessage = message == null ? "" : message;
@@ -89,6 +87,13 @@ public final class NativeNotification {
 
         manager.notify(notificationId, builder.build());
         return true;
+    }
+
+    @SuppressWarnings("deprecation")
+    private static Notification.Builder createBuilder(Context context) {
+        if (Build.VERSION.SDK_INT >= 26)
+            return new Notification.Builder(context, CHANNEL_ID);
+        return new Notification.Builder(context);
     }
 
     private static void ensureChannel(NotificationManager manager) {
