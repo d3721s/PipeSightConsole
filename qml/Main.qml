@@ -27,6 +27,13 @@ ApplicationWindow {
         }
     }
 
+    Connections {
+        target: NativeNotifier
+        function onNotificationFailed(message) {
+            AppNotifier.info(message)
+        }
+    }
+
     AppSnackbar {}
 
     header: ToolBar {

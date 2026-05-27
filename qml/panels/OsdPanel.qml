@@ -28,6 +28,7 @@ GroupBox {
         OsdViewModel.inspectionUnit = inspectionUnitField.text
         applying = false
         reload()
+        AppNotifier.info(qsTr("OSD字幕叠加应用完成"))
     }
 
     Component.onCompleted: reload()

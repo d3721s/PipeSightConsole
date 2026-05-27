@@ -44,6 +44,7 @@ set(VIEWMODEL_SOURCES
     src/viewmodels/osd_viewmodel.h              src/viewmodels/osd_viewmodel.cpp
     src/viewmodels/config_viewmodel.h           src/viewmodels/config_viewmodel.cpp
     src/viewmodels/advanced_viewmodel.h         src/viewmodels/advanced_viewmodel.cpp
+    src/viewmodels/native_notifier.h            src/viewmodels/native_notifier.cpp
 )
 
 set(DATA_SOURCES

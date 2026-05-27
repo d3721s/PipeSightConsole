@@ -55,7 +55,7 @@ void CameraViewModel::snapshot()
     recording_.takeSnapshot();
 }
 
-void CameraViewModel::configureCamera(int channel,
+bool CameraViewModel::configureCamera(int channel,
                                       const QString &username,
                                       const QString &password,
                                       const QString &ip,
@@ -72,6 +72,9 @@ void CameraViewModel::configureCamera(int channel,
                                       const QString &sub2Resolution,
                                       int sub2Fps)
 {
+    if (channel < 0 || channel > 1)
+        return false;
+
     services::CameraConfig cfg;
     cfg.username       = username;
     cfg.password       = password;
@@ -89,6 +92,7 @@ void CameraViewModel::configureCamera(int channel,
     cfg.sub2Resolution = sub2Resolution;
     cfg.sub2Fps        = sub2Fps;
     service_.configureCamera(static_cast<CameraService::Channel>(channel), cfg);
+    return true;
 }
 
 QVariantMap CameraViewModel::cameraConfig(int channel) const

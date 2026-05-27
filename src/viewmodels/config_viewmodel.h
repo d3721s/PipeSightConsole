@@ -38,6 +38,7 @@ public:
     void setCyclicRecord(bool on);
     void setStoragePath(const QString &p);
 
+    Q_INVOKABLE bool applyRecordingConfig(int segmentMinutes, bool cyclicRecord, const QString &storagePath);
     Q_INVOKABLE void configureCamera(int channel, const QString &ip,
                                      const QString &main,
                                      const QString &sub,
@@ -46,6 +47,10 @@ public:
     Q_INVOKABLE QVariant radarParam(const QString &key) const;
     Q_INVOKABLE void setStereoParam(const QString &key, const QVariant &v);
     Q_INVOKABLE void setRadarParam(const QString &key, const QVariant &v);
+    Q_INVOKABLE bool readStereoParams();
+    Q_INVOKABLE bool applyStereoParams(int exposure, const QString &whiteBalance, bool sync);
+    Q_INVOKABLE bool readRadarParams();
+    Q_INVOKABLE bool applyRadarParams(int scanHz, int angleDeg, int rangeM);
 
 signals:
     void configChanged();

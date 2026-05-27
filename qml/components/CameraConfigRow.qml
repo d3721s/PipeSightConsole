@@ -54,6 +54,11 @@ GroupBox {
         setCombo(sub2FpsBox, root.fpsOptions, cfg.sub2Fps || 25)
     }
 
+    function readConfig() {
+        root.reload()
+        AppNotifier.info(qsTr("%1读取完成").arg(root.title))
+    }
+
     Component.onCompleted: reload()
 
     Connections {
@@ -62,7 +67,7 @@ GroupBox {
     }
 
     function reportConfig() {
-        CameraViewModel.configureCamera(
+        const ok = CameraViewModel.configureCamera(
             root.channel,
             userField.text,
             passwordField.text,
@@ -79,6 +84,10 @@ GroupBox {
             sub2EnabledBox.checked,
             sub2ResBox.currentText,
             parseInt(sub2FpsBox.currentText) || 25)
+        if (ok)
+            AppNotifier.info(qsTr("%1应用完成").arg(root.title))
+        else
+            AppNotifier.error(qsTr("%1应用失败").arg(root.title))
     }
 
     ColumnLayout {
@@ -225,7 +234,7 @@ GroupBox {
                 text: qsTr("读取")
                 Layout.preferredWidth: root.buttonWidth
                 Layout.preferredHeight: root.fieldHeight
-                onClicked: root.reload()
+                onClicked: root.readConfig()
             }
             Button {
                 text: qsTr("应用")

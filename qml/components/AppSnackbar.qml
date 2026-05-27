@@ -7,7 +7,7 @@ Popup {
 
     property bool isError: false
     property int duration: 3200
-    property int bottomMargin: Qt.platform.os === "android" ? 32 : 24
+    property int snackbarBottomMargin: Qt.platform.os === "android" ? 32 : 24
     readonly property int maxSnackbarWidth: parent ? Math.max(240, parent.width - 32) : 320
 
     function show(message, error) {
@@ -29,7 +29,7 @@ Popup {
                     Math.max(320, snackbarText.implicitWidth + leftPadding + rightPadding))
     height: Math.max(48, snackbarText.implicitHeight + topPadding + bottomPadding)
     x: parent ? Math.round((parent.width - width) / 2) : 0
-    y: parent ? parent.height - height - bottomMargin : 0
+    y: parent ? parent.height - height - snackbarBottomMargin : 0
 
     Connections {
         target: AppNotifier

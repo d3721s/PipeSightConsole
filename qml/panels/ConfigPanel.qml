@@ -20,7 +20,14 @@ Item {
         return text
     }
 
-    function readStereoParams() {
+    function notifyResult(ok, successMessage, failureMessage) {
+        if (ok)
+            AppNotifier.info(successMessage)
+        else
+            AppNotifier.error(failureMessage)
+    }
+
+    function loadLocalStereoParams() {
         exp.value = Number(ConfigViewModel.stereoParam("exposure"))
         const wb = String(ConfigViewModel.stereoParam("whiteBalance"))
         const wbIndex = ["Auto", "Daylight", "Cloudy", "Tungsten"].indexOf(wb)
@@ -28,27 +35,39 @@ Item {
         syncExposure.checked = Boolean(ConfigViewModel.stereoParam("sync"))
     }
 
-    function applyStereoParams() {
-        ConfigViewModel.setStereoParam("exposure", exp.value)
-        ConfigViewModel.setStereoParam("whiteBalance", wbBox.currentText)
-        ConfigViewModel.setStereoParam("sync", syncExposure.checked)
+    function readStereoParams() {
+        const ok = ConfigViewModel.readStereoParams()
+        if (ok)
+            loadLocalStereoParams()
+        notifyResult(ok, qsTr("双目相机参数读取完成"), qsTr("双目相机参数读取失败：后端未实现"))
     }
 
-    function readRadarParams() {
+    function applyStereoParams() {
+        const ok = ConfigViewModel.applyStereoParams(exp.value, wbBox.currentText, syncExposure.checked)
+        notifyResult(ok, qsTr("双目相机参数应用完成"), qsTr("双目相机参数应用失败：后端未实现"))
+    }
+
+    function loadLocalRadarParams() {
         scanHzBox.value = Number(ConfigViewModel.radarParam("scanHz"))
         angleDegBox.value = Number(ConfigViewModel.radarParam("angleDeg"))
         rangeMBox.value = Number(ConfigViewModel.radarParam("rangeM"))
     }
 
+    function readRadarParams() {
+        const ok = ConfigViewModel.readRadarParams()
+        if (ok)
+            loadLocalRadarParams()
+        notifyResult(ok, qsTr("激光雷达参数读取完成"), qsTr("激光雷达参数读取失败：后端未实现"))
+    }
+
     function applyRadarParams() {
-        ConfigViewModel.setRadarParam("scanHz", scanHzBox.value)
-        ConfigViewModel.setRadarParam("angleDeg", angleDegBox.value)
-        ConfigViewModel.setRadarParam("rangeM", rangeMBox.value)
+        const ok = ConfigViewModel.applyRadarParams(scanHzBox.value, angleDegBox.value, rangeMBox.value)
+        notifyResult(ok, qsTr("激光雷达参数应用完成"), qsTr("激光雷达参数应用失败：后端未实现"))
     }
 
     Component.onCompleted: {
-        readStereoParams()
-        readRadarParams()
+        loadLocalStereoParams()
+        loadLocalRadarParams()
     }
 
     FolderDialog {
@@ -102,13 +121,11 @@ Item {
                         value: ConfigViewModel.segmentMinutes
                         Layout.preferredWidth: panel.compactFieldWidth
                         Layout.preferredHeight: panel.fieldHeight
-                        onValueModified: ConfigViewModel.segmentMinutes = value
                     }
                     CheckBox {
                         id: cyclicRecordSwitch
                         text: qsTr("循环录像")
                         checked: ConfigViewModel.cyclicRecord
-                        onToggled: ConfigViewModel.cyclicRecord = checked
                     }
                     Label { text: qsTr("存储路径") }
                     Rectangle {
@@ -138,9 +155,13 @@ Item {
                         Layout.preferredWidth: panel.buttonWidth
                         Layout.preferredHeight: panel.fieldHeight
                         onClicked: {
-                            ConfigViewModel.segmentMinutes = segmentMinutesBox.value
-                            ConfigViewModel.cyclicRecord = cyclicRecordSwitch.checked
-                            ConfigViewModel.storagePath = panel.storagePathDraft
+                            const ok = ConfigViewModel.applyRecordingConfig(
+                                segmentMinutesBox.value,
+                                cyclicRecordSwitch.checked,
+                                panel.storagePathDraft)
+                            if (ok)
+                                panel.storagePathDraft = ConfigViewModel.storagePath
+                            panel.notifyResult(ok, qsTr("录像配置应用完成"), qsTr("录像配置应用失败：存储路径不可用"))
                         }
                     }
                 }

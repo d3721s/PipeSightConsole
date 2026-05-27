@@ -38,7 +38,7 @@ public:
     Q_INVOKABLE void stopRecording();
     Q_INVOKABLE void snapshot();
 
-    Q_INVOKABLE void configureCamera(int channel,
+    Q_INVOKABLE bool configureCamera(int channel,
                                      const QString &username,
                                      const QString &password,
                                      const QString &ip,

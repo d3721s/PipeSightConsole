@@ -16,4 +16,12 @@ QtObject {
     function error(message) {
         show(message, true)
     }
+
+    function nativeInfo(title, message) {
+        NativeNotifier.notify(title, message)
+    }
+
+    function nativeError(title, message) {
+        NativeNotifier.notify(title, message)
+    }
 }

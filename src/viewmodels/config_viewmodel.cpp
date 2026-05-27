@@ -1,6 +1,8 @@
 #include "config_viewmodel.h"
 #include "data/app_settings.h"
 
+#include <QDir>
+
 namespace pipesight::viewmodels {
 
 using pipesight::data::AppSettings;
@@ -49,6 +51,20 @@ void ConfigViewModel::setStoragePath(const QString &p)
     emit configChanged();
 }
 
+bool ConfigViewModel::applyRecordingConfig(int segmentMinutes, bool cyclicRecord, const QString &storagePath)
+{
+    const QString path = storagePath.trimmed();
+    if (path.isEmpty())
+        return false;
+    if (!QDir().mkpath(path))
+        return false;
+
+    setSegmentMinutes(segmentMinutes);
+    setCyclicRecord(cyclicRecord);
+    setStoragePath(path);
+    return true;
+}
+
 void ConfigViewModel::configureCamera(int channel, const QString &ip,
                                       const QString &main,
                                       const QString &sub,
@@ -77,6 +93,32 @@ void ConfigViewModel::setRadarParam(const QString &key, const QVariant &v)
 {
     AppSettings::instance().setValue(QStringLiteral("radar/") + key, v);
     emit radarParamChanged(key, v);
+}
+
+bool ConfigViewModel::readStereoParams()
+{
+    return false;
+}
+
+bool ConfigViewModel::applyStereoParams(int exposure, const QString &whiteBalance, bool sync)
+{
+    Q_UNUSED(exposure);
+    Q_UNUSED(whiteBalance);
+    Q_UNUSED(sync);
+    return false;
+}
+
+bool ConfigViewModel::readRadarParams()
+{
+    return false;
+}
+
+bool ConfigViewModel::applyRadarParams(int scanHz, int angleDeg, int rangeM)
+{
+    Q_UNUSED(scanHz);
+    Q_UNUSED(angleDeg);
+    Q_UNUSED(rangeM);
+    return false;
 }
 
 } // namespace pipesight::viewmodels
