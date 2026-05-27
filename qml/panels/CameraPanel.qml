@@ -87,21 +87,27 @@ Item {
                     GroupBox {
                         title: qsTr("变焦")
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 76
 
                         RowLayout {
                             anchors.fill: parent
                             spacing: 6
 
-                            Label { text: qsTr("远") }
+                            Label {
+                                text: qsTr("远")
+                                Layout.alignment: Qt.AlignVCenter
+                            }
                             Slider {
                                 id: zoomSlider
                                 from: -1; to: 1; value: 0
                                 Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignVCenter
                                 onMoved: CameraViewModel.zoom(value)
                                 onPressedChanged: if (!pressed) value = 0
                             }
-                            Label { text: qsTr("近") }
+                            Label {
+                                text: qsTr("近")
+                                Layout.alignment: Qt.AlignVCenter
+                            }
                         }
                     }
 
