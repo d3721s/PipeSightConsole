@@ -3,6 +3,7 @@
 #include "comm/tcp_client.h"
 #include "data/app_settings.h"
 
+#include <QRegularExpression>
 #include <QUrlQuery>
 
 namespace pipesight::services {
@@ -10,6 +11,17 @@ namespace pipesight::services {
 using comm::ConnectionManager;
 using comm::TcpClient;
 using pipesight::data::AppSettings;
+
+namespace {
+
+QString normalizedResolution(QString value)
+{
+    value.replace(QRegularExpression(QStringLiteral("\\s*[xX]\\s*")), QStringLiteral(" x "));
+    value.replace(QRegularExpression(QStringLiteral("\\s*\\*\\s*")), QStringLiteral(" x "));
+    return value;
+}
+
+} // namespace
 
 CameraService::CameraService(QObject *parent)
     : QObject(parent)
@@ -71,6 +83,10 @@ void CameraService::configureCamera(Channel ch, const CameraConfig &cfg)
 QUrl CameraService::buildUrl(const CameraConfig &cfg)
 {
     if (!cfg.isComplete()) return {};
+    if ((cfg.subtype == 1 && !cfg.sub1Enabled) ||
+        (cfg.subtype == 2 && !cfg.sub2Enabled)) {
+        return {};
+    }
 
     QUrl url;
     url.setScheme(QStringLiteral("rtsp"));
@@ -109,10 +125,17 @@ CameraConfig CameraService::loadConfig(Channel ch) const
     cfg.onvifPort      = static_cast<quint16>(s.value(p + QStringLiteral("onvifPort"), 80).toUInt());
     cfg.channel        = s.value(p + QStringLiteral("channel"), 1).toInt();
     cfg.subtype        = s.value(p + QStringLiteral("subtype"), 0).toInt();
-    cfg.mainResolution = s.value(p + QStringLiteral("mainResolution"), QStringLiteral("1920x1080")).toString();
+    if (cfg.subtype < 0 || cfg.subtype > 2) cfg.subtype = 0;
+    cfg.mainResolution = normalizedResolution(s.value(p + QStringLiteral("mainResolution"), QStringLiteral("1920 x 1080")).toString());
     cfg.mainFps        = s.value(p + QStringLiteral("mainFps"), 25).toInt();
-    cfg.subResolution  = s.value(p + QStringLiteral("subResolution"), QStringLiteral("704x576")).toString();
-    cfg.subFps         = s.value(p + QStringLiteral("subFps"), 25).toInt();
+    cfg.sub1Enabled    = s.value(p + QStringLiteral("sub1Enabled"), true).toBool();
+    cfg.sub1Resolution = normalizedResolution(s.value(p + QStringLiteral("sub1Resolution"),
+                                                      s.value(p + QStringLiteral("subResolution"), QStringLiteral("704 x 576"))).toString());
+    cfg.sub1Fps        = s.value(p + QStringLiteral("sub1Fps"),
+                                 s.value(p + QStringLiteral("subFps"), 25)).toInt();
+    cfg.sub2Enabled    = s.value(p + QStringLiteral("sub2Enabled"), false).toBool();
+    cfg.sub2Resolution = normalizedResolution(s.value(p + QStringLiteral("sub2Resolution"), QStringLiteral("640 x 480")).toString());
+    cfg.sub2Fps        = s.value(p + QStringLiteral("sub2Fps"), 25).toInt();
     return cfg;
 }
 
@@ -129,8 +152,14 @@ void CameraService::saveConfig(Channel ch, const CameraConfig &cfg) const
     s.setValue(p + QStringLiteral("subtype"),        cfg.subtype);
     s.setValue(p + QStringLiteral("mainResolution"), cfg.mainResolution);
     s.setValue(p + QStringLiteral("mainFps"),        cfg.mainFps);
-    s.setValue(p + QStringLiteral("subResolution"),  cfg.subResolution);
-    s.setValue(p + QStringLiteral("subFps"),         cfg.subFps);
+    s.setValue(p + QStringLiteral("sub1Enabled"),    cfg.sub1Enabled);
+    s.setValue(p + QStringLiteral("sub1Resolution"), cfg.sub1Resolution);
+    s.setValue(p + QStringLiteral("sub1Fps"),        cfg.sub1Fps);
+    s.setValue(p + QStringLiteral("sub2Enabled"),    cfg.sub2Enabled);
+    s.setValue(p + QStringLiteral("sub2Resolution"), cfg.sub2Resolution);
+    s.setValue(p + QStringLiteral("sub2Fps"),        cfg.sub2Fps);
+    s.setValue(p + QStringLiteral("subResolution"),  cfg.sub1Resolution);
+    s.setValue(p + QStringLiteral("subFps"),         cfg.sub1Fps);
 }
 
 void CameraService::onFrameReceived(quint8 type, const QByteArray &payload)

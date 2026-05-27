@@ -6,6 +6,7 @@
 #include <QVariantMap>
 #include <QtQmlIntegration/qqmlintegration.h>
 #include "services/camera_service.h"
+#include "services/recording_service.h"
 
 namespace pipesight::viewmodels {
 
@@ -25,7 +26,7 @@ public:
 
     QUrl streamUrl() const;
     int  activeChannelInt() const { return static_cast<int>(service_.activeChannel()); }
-    bool recording() const { return recording_; }
+    bool recording() const { return recording_.isRecording(); }
 
     Q_INVOKABLE void pan(qreal dx, qreal dy)  { service_.pan(dx, dy); }
     Q_INVOKABLE void zoom(qreal delta)         { service_.zoom(delta); }
@@ -47,8 +48,12 @@ public:
                                      int subtype,
                                      const QString &mainResolution,
                                      int mainFps,
-                                     const QString &subResolution,
-                                     int subFps);
+                                     bool sub1Enabled,
+                                     const QString &sub1Resolution,
+                                     int sub1Fps,
+                                     bool sub2Enabled,
+                                     const QString &sub2Resolution,
+                                     int sub2Fps);
 
     Q_INVOKABLE QVariantMap cameraConfig(int channel) const;
     Q_INVOKABLE QString     cameraStreamUrl(int channel) const;
@@ -57,11 +62,12 @@ signals:
     void streamUrlChanged();
     void activeChannelChanged();
     void recordingChanged();
+    void recordingNotification(QString message, bool isError);
     void cameraConfigChanged(int channel);
 
 private:
     services::CameraService service_;
-    bool                     recording_ = false;
+    services::RecordingService recording_;
 };
 
 } // namespace pipesight::viewmodels

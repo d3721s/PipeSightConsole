@@ -36,6 +36,8 @@ signals:
     void osdChanged();
 
 private:
+    void loadSettings();
+
     bool    showProject_   = true;
     bool    showTime_      = true;
     bool    showPosition_  = true;

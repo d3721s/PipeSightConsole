@@ -11,10 +11,28 @@ GroupBox {
     property int compactFieldWidth: 220
     property int buttonWidth: 172
 
+    readonly property int resolutionFieldWidth: compactFieldWidth + 55
+    readonly property int fpsFieldWidth: Math.max(86, compactFieldWidth - 18)
+    readonly property int subCheckWidth: Math.max(98, compactFieldWidth - 12)
     readonly property var resolutionOptions: [
-        "3840x2160", "2560x1440", "1920x1080", "1280x720", "704x576", "640x480"
+        "3840 x 2160", "2560 x 1440", "1920 x 1080", "1280 x 720", "704 x 576", "640 x 480"
     ]
     readonly property var fpsOptions: [60, 50, 30, 25, 20, 15, 10, 5]
+
+    function normalizeResolution(value, fallback) {
+        const text = String(value || fallback)
+        return text.replace(/\s*[xX]\s*/g, " x ").replace(/\s*\*\s*/g, " x ")
+    }
+
+    function setCombo(box, options, value) {
+        const idx = options.indexOf(value)
+        box.currentIndex = idx >= 0 ? idx : 0
+    }
+
+    function validSubtype(value) {
+        const subtype = parseInt(value)
+        return isNaN(subtype) ? 0 : Math.max(0, Math.min(2, subtype))
+    }
 
     function reload() {
         const cfg = CameraViewModel.cameraConfig(root.channel)
@@ -24,16 +42,16 @@ GroupBox {
         rtspPortField.text   = String(cfg.rtspPort  || 554)
         onvifPortField.text  = String(cfg.onvifPort || 80)
         chField.value        = cfg.channel || 1
-        subBox.currentIndex  = (cfg.subtype === 1) ? 1 : 0
+        subBox.currentIndex  = validSubtype(cfg.subtype || 0)
+        sub1EnabledBox.checked = cfg.sub1Enabled === undefined ? true : cfg.sub1Enabled
+        sub2EnabledBox.checked = cfg.sub2Enabled === undefined ? false : cfg.sub2Enabled
 
-        const setCombo = function(box, options, value) {
-            const idx = options.indexOf(value)
-            box.currentIndex = idx >= 0 ? idx : 0
-        }
-        setCombo(mainResBox, root.resolutionOptions, cfg.mainResolution || "1920x1080")
-        setCombo(subResBox,  root.resolutionOptions, cfg.subResolution  || "704x576")
+        setCombo(mainResBox, root.resolutionOptions, normalizeResolution(cfg.mainResolution, "1920 x 1080"))
+        setCombo(sub1ResBox, root.resolutionOptions, normalizeResolution(cfg.sub1Resolution, "704 x 576"))
+        setCombo(sub2ResBox, root.resolutionOptions, normalizeResolution(cfg.sub2Resolution, "640 x 480"))
         setCombo(mainFpsBox, root.fpsOptions, cfg.mainFps || 25)
-        setCombo(subFpsBox,  root.fpsOptions, cfg.subFps  || 25)
+        setCombo(sub1FpsBox, root.fpsOptions, cfg.sub1Fps || 25)
+        setCombo(sub2FpsBox, root.fpsOptions, cfg.sub2Fps || 25)
     }
 
     Component.onCompleted: reload()
@@ -55,8 +73,12 @@ GroupBox {
             subBox.currentIndex,
             mainResBox.currentText,
             parseInt(mainFpsBox.currentText) || 25,
-            subResBox.currentText,
-            parseInt(subFpsBox.currentText) || 25)
+            sub1EnabledBox.checked,
+            sub1ResBox.currentText,
+            parseInt(sub1FpsBox.currentText) || 25,
+            sub2EnabledBox.checked,
+            sub2ResBox.currentText,
+            parseInt(sub2FpsBox.currentText) || 25)
     }
 
     ColumnLayout {
@@ -111,43 +133,7 @@ GroupBox {
             Item { Layout.fillWidth: true }
         }
 
-        // Row 2: 主码流分辨率 / 主码流FPS / 辅码流分辨率 / 辅码流FPS
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 8
-
-            Label { text: qsTr("主码流分辨率") }
-            ComboBox {
-                id: mainResBox
-                Layout.preferredWidth: root.compactFieldWidth + 50
-                Layout.preferredHeight: root.fieldHeight
-                model: root.resolutionOptions
-            }
-            Label { text: qsTr("主码流FPS") }
-            ComboBox {
-                id: mainFpsBox
-                Layout.preferredWidth: root.compactFieldWidth
-                Layout.preferredHeight: root.fieldHeight
-                model: root.fpsOptions
-            }
-            Label { text: qsTr("辅码流分辨率") }
-            ComboBox {
-                id: subResBox
-                Layout.preferredWidth: root.compactFieldWidth + 50
-                Layout.preferredHeight: root.fieldHeight
-                model: root.resolutionOptions
-            }
-            Label { text: qsTr("辅码流FPS") }
-            ComboBox {
-                id: subFpsBox
-                Layout.preferredWidth: root.compactFieldWidth
-                Layout.preferredHeight: root.fieldHeight
-                model: root.fpsOptions
-            }
-            Item { Layout.fillWidth: true }
-        }
-
-        // Row 3: 通道 / 码流 / 应用
+        // Row 2: 通道 / 码流选择 / 主码流设置
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
@@ -160,14 +146,87 @@ GroupBox {
                 Layout.preferredWidth: root.compactFieldWidth
                 Layout.preferredHeight: root.fieldHeight
             }
-            Label { text: qsTr("码流") }
+            Label { text: qsTr("码流选择") }
             ComboBox {
                 id: subBox
                 Layout.preferredWidth: root.compactFieldWidth
                 Layout.preferredHeight: root.fieldHeight
-                model: [qsTr("主码流"), qsTr("辅码流")]
+                model: [qsTr("主码流"), qsTr("辅码流1"), qsTr("辅码流2")]
+            }
+            Label { text: qsTr("主码流设置：") }
+            Label { text: qsTr("W x H") }
+            ComboBox {
+                id: mainResBox
+                Layout.preferredWidth: root.resolutionFieldWidth
+                Layout.preferredHeight: root.fieldHeight
+                model: root.resolutionOptions
+            }
+            Label { text: qsTr("FPS") }
+            ComboBox {
+                id: mainFpsBox
+                Layout.preferredWidth: root.fpsFieldWidth
+                Layout.preferredHeight: root.fieldHeight
+                model: root.fpsOptions
             }
             Item { Layout.fillWidth: true }
+        }
+
+        // Row 3: 辅码流1 / 辅码流2 / 应用
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 6
+
+            CheckBox {
+                id: sub1EnabledBox
+                text: qsTr("辅码流1")
+                Layout.preferredWidth: root.subCheckWidth
+                Layout.preferredHeight: root.fieldHeight
+            }
+            Label { text: qsTr("W x H") }
+            ComboBox {
+                id: sub1ResBox
+                enabled: sub1EnabledBox.checked
+                Layout.preferredWidth: root.resolutionFieldWidth
+                Layout.preferredHeight: root.fieldHeight
+                model: root.resolutionOptions
+            }
+            Label { text: qsTr("FPS") }
+            ComboBox {
+                id: sub1FpsBox
+                enabled: sub1EnabledBox.checked
+                Layout.preferredWidth: root.fpsFieldWidth
+                Layout.preferredHeight: root.fieldHeight
+                model: root.fpsOptions
+            }
+            CheckBox {
+                id: sub2EnabledBox
+                text: qsTr("辅码流2")
+                Layout.preferredWidth: root.subCheckWidth
+                Layout.preferredHeight: root.fieldHeight
+            }
+            Label { text: qsTr("W x H") }
+            ComboBox {
+                id: sub2ResBox
+                enabled: sub2EnabledBox.checked
+                Layout.preferredWidth: root.resolutionFieldWidth
+                Layout.preferredHeight: root.fieldHeight
+                model: root.resolutionOptions
+            }
+            Label { text: qsTr("FPS") }
+            ComboBox {
+                id: sub2FpsBox
+                enabled: sub2EnabledBox.checked
+                Layout.preferredWidth: root.fpsFieldWidth
+                Layout.preferredHeight: root.fieldHeight
+                model: root.fpsOptions
+            }
+            Item { Layout.fillWidth: true }
+            Button {
+                text: qsTr("读取")
+                Layout.preferredWidth: root.buttonWidth
+                Layout.preferredHeight: root.fieldHeight
+                onClicked: root.reload()
+            }
             Button {
                 text: qsTr("应用")
                 Layout.preferredWidth: root.buttonWidth

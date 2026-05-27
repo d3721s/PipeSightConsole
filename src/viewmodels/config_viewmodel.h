@@ -42,6 +42,8 @@ public:
                                      const QString &main,
                                      const QString &sub,
                                      const QString &third);
+    Q_INVOKABLE QVariant stereoParam(const QString &key) const;
+    Q_INVOKABLE QVariant radarParam(const QString &key) const;
     Q_INVOKABLE void setStereoParam(const QString &key, const QVariant &v);
     Q_INVOKABLE void setRadarParam(const QString &key, const QVariant &v);
 

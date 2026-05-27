@@ -1,6 +1,29 @@
 #include "config_viewmodel.h"
+#include "data/app_settings.h"
 
 namespace pipesight::viewmodels {
+
+using pipesight::data::AppSettings;
+
+namespace {
+
+QVariant defaultStereoParam(const QString &key)
+{
+    if (key == QStringLiteral("exposure")) return 50;
+    if (key == QStringLiteral("whiteBalance")) return QStringLiteral("Auto");
+    if (key == QStringLiteral("sync")) return false;
+    return {};
+}
+
+QVariant defaultRadarParam(const QString &key)
+{
+    if (key == QStringLiteral("scanHz")) return 10;
+    if (key == QStringLiteral("angleDeg")) return 270;
+    if (key == QStringLiteral("rangeM")) return 30;
+    return {};
+}
+
+} // namespace
 
 ConfigViewModel::ConfigViewModel(QObject *parent) : QObject(parent) {}
 ConfigViewModel::~ConfigViewModel() = default;
@@ -34,13 +57,25 @@ void ConfigViewModel::configureCamera(int channel, const QString &ip,
     emit cameraConfigured(channel, ip, main, sub, third);
 }
 
+QVariant ConfigViewModel::stereoParam(const QString &key) const
+{
+    return AppSettings::instance().value(QStringLiteral("stereo/") + key, defaultStereoParam(key));
+}
+
+QVariant ConfigViewModel::radarParam(const QString &key) const
+{
+    return AppSettings::instance().value(QStringLiteral("radar/") + key, defaultRadarParam(key));
+}
+
 void ConfigViewModel::setStereoParam(const QString &key, const QVariant &v)
 {
+    AppSettings::instance().setValue(QStringLiteral("stereo/") + key, v);
     emit stereoParamChanged(key, v);
 }
 
 void ConfigViewModel::setRadarParam(const QString &key, const QVariant &v)
 {
+    AppSettings::instance().setValue(QStringLiteral("radar/") + key, v);
     emit radarParamChanged(key, v);
 }
 

@@ -21,12 +21,16 @@ struct CameraConfig
     quint16 rtspPort  = 554;
     quint16 onvifPort = 80;
     int     channel   = 1;   // 1-based RTSP channel index
-    int     subtype   = 0;   // 0 = main stream, 1 = sub stream
+    int     subtype   = 0;   // 0 = main stream, 1 = sub stream 1, 2 = sub stream 2
 
-    QString mainResolution = QStringLiteral("1920x1080");
+    QString mainResolution = QStringLiteral("1920 x 1080");
     int     mainFps        = 25;
-    QString subResolution  = QStringLiteral("704x576");
-    int     subFps         = 25;
+    bool    sub1Enabled    = true;
+    QString sub1Resolution = QStringLiteral("704 x 576");
+    int     sub1Fps        = 25;
+    bool    sub2Enabled    = false;
+    QString sub2Resolution = QStringLiteral("640 x 480");
+    int     sub2Fps        = 25;
 
     bool isComplete() const { return !ip.isEmpty(); }
 };

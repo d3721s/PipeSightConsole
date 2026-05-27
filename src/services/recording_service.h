@@ -2,6 +2,13 @@
 
 #include <QObject>
 #include <QString>
+#include <QTimer>
+#include <QUrl>
+
+#include "services/osd_service.h"
+#include "services/vehicle_service.h"
+
+class QProcess;
 
 namespace pipesight::services {
 
@@ -29,6 +36,7 @@ public:
 
 public slots:
     void startRecording();
+    void startRecording(const QUrl &sourceUrl);
     void stopRecording();
     void takeSnapshot();   // saves a still from active video into storagePath_
 
@@ -45,13 +53,26 @@ signals:
     void errorOccurred(const QString &msg);
 
 private:
+    void loadSettings();
+    void writeOsdText();
+    QString buildOutputFilePath() const;
+    QString buildOsdTextFilePath() const;
+    QStringList buildFfmpegArguments(const QUrl &sourceUrl, const QString &outputFile) const;
+
     bool    recording_       = false;
     QString storagePath_;
+    QString outputFile_;
+    QString osdTextFile_;
     int     segmentMinutes_  = 30;
     bool    cyclic_          = true;
     int     width_  = 1920;
     int     height_ = 1080;
     Codec   codec_  = Codec::H264;
+
+    QProcess      *ffmpeg_ = nullptr;
+    QTimer         osdTimer_;
+    OsdService     osd_;
+    VehicleService vehicle_;
 };
 
 } // namespace pipesight::services

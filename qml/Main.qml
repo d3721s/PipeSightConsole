@@ -2,20 +2,32 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
+import PipeSightConsole
 
 ApplicationWindow {
     id: root
     readonly property bool isAndroid: Qt.platform.os === "android"
 
     width: 1280
-    height: 720
-    minimumWidth: isAndroid ? 0 : 1024
-    minimumHeight: isAndroid ? 0 : 640
+    height: 800
+    minimumWidth: isAndroid ? 1280 : 1024
+    minimumHeight: isAndroid ? 800 : 640
+    maximumWidth: isAndroid ? 1280 : 1920
+    maximumHeight: isAndroid ? 800 : 1080
     visible: true
     title: qsTr("PipeSight Console")
 
     Material.theme: Material.Dark
     Material.accent: Material.Cyan
+
+    Connections {
+        target: CameraViewModel
+        function onRecordingNotification(message, isError) {
+            AppNotifier.show(message, isError)
+        }
+    }
+
+    AppSnackbar {}
 
     header: ToolBar {
         RowLayout {
@@ -33,7 +45,6 @@ ApplicationWindow {
                 spacing: 8
                 ConnectionIndicator { deviceName: qsTr("前摄像头") }
                 ConnectionIndicator { deviceName: qsTr("后摄像头") }
-                ConnectionIndicator { deviceName: qsTr("激光雷达") }
                 ConnectionIndicator { deviceName: qsTr("深度相机") }
                 ConnectionIndicator { deviceName: qsTr("移动底盘") }
             }
@@ -45,7 +56,6 @@ ApplicationWindow {
         width: parent.width
         TabButton { text: qsTr("摄像头") }
         TabButton { text: qsTr("深度相机") }
-        TabButton { text: qsTr("激光雷达") }
         TabButton { text: qsTr("移动底盘") }
         TabButton { text: qsTr("高级") }
         TabButton { text: qsTr("配置") }
@@ -60,7 +70,6 @@ ApplicationWindow {
 
         CameraPanel {}
         DepthCameraPanel {}
-        LaserPanel {}
         // Vehicle tab keeps left/right panes fixed; each pane scrolls vertically.
         Item {
             VehicleInfoPanel {
@@ -81,4 +90,5 @@ ApplicationWindow {
         AdvancedPanel {}
         ConfigPanel {}
     }
+
 }

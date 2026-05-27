@@ -20,6 +20,17 @@ CameraViewModel::CameraViewModel(QObject *parent)
             this, [this](CameraService::Channel ch) {
                 emit cameraConfigChanged(static_cast<int>(ch));
             });
+    connect(&recording_, &services::RecordingService::recordingStateChanged,
+            this, [this](bool on) {
+                emit recordingChanged();
+                emit recordingNotification(on ? QStringLiteral("录像已开始")
+                                              : QStringLiteral("录像已停止"),
+                                           false);
+            });
+    connect(&recording_, &services::RecordingService::errorOccurred,
+            this, [this](const QString &msg) {
+                emit recordingNotification(msg, true);
+            });
 }
 
 CameraViewModel::~CameraViewModel() = default;
@@ -31,17 +42,17 @@ QUrl CameraViewModel::streamUrl() const
 
 void CameraViewModel::startRecording()
 {
-    if (!recording_) { recording_ = true; emit recordingChanged(); }
+    recording_.startRecording(streamUrl());
 }
 
 void CameraViewModel::stopRecording()
 {
-    if (recording_) { recording_ = false; emit recordingChanged(); }
+    recording_.stopRecording();
 }
 
 void CameraViewModel::snapshot()
 {
-    // TODO: route to RecordingService::takeSnapshot()
+    recording_.takeSnapshot();
 }
 
 void CameraViewModel::configureCamera(int channel,
@@ -54,8 +65,12 @@ void CameraViewModel::configureCamera(int channel,
                                       int subtype,
                                       const QString &mainResolution,
                                       int mainFps,
-                                      const QString &subResolution,
-                                      int subFps)
+                                      bool sub1Enabled,
+                                      const QString &sub1Resolution,
+                                      int sub1Fps,
+                                      bool sub2Enabled,
+                                      const QString &sub2Resolution,
+                                      int sub2Fps)
 {
     services::CameraConfig cfg;
     cfg.username       = username;
@@ -67,8 +82,12 @@ void CameraViewModel::configureCamera(int channel,
     cfg.subtype        = subtype;
     cfg.mainResolution = mainResolution;
     cfg.mainFps        = mainFps;
-    cfg.subResolution  = subResolution;
-    cfg.subFps         = subFps;
+    cfg.sub1Enabled    = sub1Enabled;
+    cfg.sub1Resolution = sub1Resolution;
+    cfg.sub1Fps        = sub1Fps;
+    cfg.sub2Enabled    = sub2Enabled;
+    cfg.sub2Resolution = sub2Resolution;
+    cfg.sub2Fps        = sub2Fps;
     service_.configureCamera(static_cast<CameraService::Channel>(channel), cfg);
 }
 
@@ -85,8 +104,12 @@ QVariantMap CameraViewModel::cameraConfig(int channel) const
     m.insert(QStringLiteral("subtype"),        cfg.subtype);
     m.insert(QStringLiteral("mainResolution"), cfg.mainResolution);
     m.insert(QStringLiteral("mainFps"),        cfg.mainFps);
-    m.insert(QStringLiteral("subResolution"),  cfg.subResolution);
-    m.insert(QStringLiteral("subFps"),         cfg.subFps);
+    m.insert(QStringLiteral("sub1Enabled"),    cfg.sub1Enabled);
+    m.insert(QStringLiteral("sub1Resolution"), cfg.sub1Resolution);
+    m.insert(QStringLiteral("sub1Fps"),        cfg.sub1Fps);
+    m.insert(QStringLiteral("sub2Enabled"),    cfg.sub2Enabled);
+    m.insert(QStringLiteral("sub2Resolution"), cfg.sub2Resolution);
+    m.insert(QStringLiteral("sub2Fps"),        cfg.sub2Fps);
     return m;
 }
 

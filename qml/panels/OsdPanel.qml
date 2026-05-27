@@ -6,8 +6,39 @@ import PipeSightConsole
 GroupBox {
     id: osdPanel
     title: qsTr("OSD 字幕叠加")
+    bottomPadding: 16
 
     readonly property int fieldHeight: 44
+    property bool applying: false
+
+    function reload() {
+        showProjectInfoBox.checked = OsdViewModel.showProjectInfo
+        showTimeBox.checked = OsdViewModel.showTime
+        showPositionBox.checked = OsdViewModel.showPosition
+        projectNameField.text = OsdViewModel.projectName
+        inspectionUnitField.text = OsdViewModel.inspectionUnit
+    }
+
+    function applyConfig() {
+        applying = true
+        OsdViewModel.showProjectInfo = showProjectInfoBox.checked
+        OsdViewModel.showTime = showTimeBox.checked
+        OsdViewModel.showPosition = showPositionBox.checked
+        OsdViewModel.projectName = projectNameField.text
+        OsdViewModel.inspectionUnit = inspectionUnitField.text
+        applying = false
+        reload()
+    }
+
+    Component.onCompleted: reload()
+
+    Connections {
+        target: OsdViewModel
+        function onOsdChanged() {
+            if (!osdPanel.applying)
+                osdPanel.reload()
+        }
+    }
 
     ColumnLayout {
         width: parent.width
@@ -18,19 +49,16 @@ GroupBox {
             spacing: 16
 
             CheckBox {
+                id: showProjectInfoBox
                 text: qsTr("显示项目信息")
-                checked: OsdViewModel.showProjectInfo
-                onToggled: OsdViewModel.showProjectInfo = checked
             }
             CheckBox {
+                id: showTimeBox
                 text: qsTr("显示时间")
-                checked: OsdViewModel.showTime
-                onToggled: OsdViewModel.showTime = checked
             }
             CheckBox {
+                id: showPositionBox
                 text: qsTr("显示当前位置(里程/深度)")
-                checked: OsdViewModel.showPosition
-                onToggled: OsdViewModel.showPosition = checked
             }
             Item { Layout.fillWidth: true }
         }
@@ -41,19 +69,23 @@ GroupBox {
 
             Label { text: qsTr("项目名称") }
             TextField {
+                id: projectNameField
                 Layout.preferredWidth: 320
                 Layout.preferredHeight: osdPanel.fieldHeight
-                text: OsdViewModel.projectName
-                onEditingFinished: OsdViewModel.projectName = text
             }
             Label { text: qsTr("检测单位") }
             TextField {
+                id: inspectionUnitField
                 Layout.preferredWidth: 320
                 Layout.preferredHeight: osdPanel.fieldHeight
-                text: OsdViewModel.inspectionUnit
-                onEditingFinished: OsdViewModel.inspectionUnit = text
             }
             Item { Layout.fillWidth: true }
+            Button {
+                text: qsTr("应用")
+                Layout.preferredWidth: 86
+                Layout.preferredHeight: osdPanel.fieldHeight
+                onClicked: osdPanel.applyConfig()
+            }
         }
     }
 }

@@ -29,7 +29,8 @@ Item {
                 GroupBox {
                     title: qsTr("运动控制")
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 360
+                    Layout.preferredHeight: 376
+                    bottomPadding: 16
                     ColumnLayout {
                         anchors.fill: parent
                         Joystick {
@@ -66,7 +67,8 @@ Item {
                 GroupBox {
                     title: qsTr("灯光")
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 132
+                    Layout.preferredHeight: 148
+                    bottomPadding: 16
                     GridLayout {
                         columns: 3; rowSpacing: 8
                         Label { text: qsTr("前灯") }

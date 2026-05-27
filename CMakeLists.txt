@@ -6,16 +6,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 6.10 REQUIRED COMPONENTS
+find_package(Qt6 6.8 REQUIRED COMPONENTS
     Quick
     QuickControls2
+    QuickDialogs2
     Network
     Sql
     Multimedia
     Concurrent
 )
 
-qt_standard_project_setup(REQUIRES 6.10)
+qt_standard_project_setup(REQUIRES 6.8)
 
 # --- C++ sources -----------------------------------------------------------
 set(COMM_SOURCES
@@ -53,7 +54,6 @@ set(DATA_SOURCES
 set(QML_FILES
     qml/Main.qml
     qml/panels/CameraPanel.qml
-    qml/panels/LaserPanel.qml
     qml/panels/DepthCameraPanel.qml
     qml/panels/VehicleControlPanel.qml
     qml/panels/VehicleInfoPanel.qml
@@ -64,6 +64,8 @@ set(QML_FILES
     qml/components/ConnectionIndicator.qml
     qml/components/VideoView.qml
     qml/components/CameraConfigRow.qml
+    qml/components/AppNotifier.qml
+    qml/components/AppSnackbar.qml
 )
 
 # Keep the QML source layout (qml/, qml/panels/, qml/components/) on disk,
@@ -78,6 +80,10 @@ foreach(_qml_file IN LISTS QML_FILES)
         QT_RESOURCE_ALIAS "${_qml_basename}"
     )
 endforeach()
+
+set_source_files_properties(qml/components/AppNotifier.qml PROPERTIES
+    QT_QML_SINGLETON_TYPE TRUE
+)
 
 qt_add_executable(appPipeSightConsole
     src/app/main.cpp
@@ -102,6 +108,7 @@ target_include_directories(appPipeSightConsole PRIVATE
 target_link_libraries(appPipeSightConsole PRIVATE
     Qt6::Quick
     Qt6::QuickControls2
+    Qt6::QuickDialogs2
     Qt6::Network
     Qt6::Sql
     Qt6::Multimedia
