@@ -81,7 +81,9 @@ public final class NativeNotification {
                 .setContentText(safeMessage)
                 .setStyle(new Notification.BigTextStyle().bigText(safeMessage))
                 .setContentIntent(pendingIntent)
-                .setAutoCancel(true)
+                .setOngoing(true)
+                .setAutoCancel(false)
+                .setOnlyAlertOnce(true)
                 .setShowWhen(true)
                 .setWhen(System.currentTimeMillis());
 
