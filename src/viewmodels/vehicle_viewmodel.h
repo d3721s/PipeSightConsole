@@ -58,7 +58,7 @@ signals:
     void rearLightChanged();
 
 private:
-    services::VehicleService            service_;
+    services::VehicleService           &service_;
     services::VehicleService::Telemetry latest_;
     int                                  frontLight_ = 0;
     int                                  rearLight_  = 0;

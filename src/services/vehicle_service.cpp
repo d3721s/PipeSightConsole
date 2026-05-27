@@ -6,6 +6,12 @@
 
 namespace pipesight::services {
 
+VehicleService &VehicleService::instance()
+{
+    static VehicleService service;
+    return service;
+}
+
 VehicleService::VehicleService(QObject *parent)
     : QObject(parent)
     , client_(comm::ConnectionManager::instance().acquire(QStringLiteral("vehicle")))

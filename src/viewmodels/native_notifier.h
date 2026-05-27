@@ -22,12 +22,14 @@ public:
     Q_INVOKABLE bool requestPermission();
     Q_INVOKABLE bool notificationsEnabled() const;
     Q_INVOKABLE bool notify(const QString &title, const QString &message);
+    Q_INVOKABLE bool notifyError(const QString &title, const QString &message);
 
 signals:
     void notificationFailed(QString message);
 
 private:
     int nextNotificationId();
+    bool sendNotification(const QString &title, const QString &message, bool isError);
 
     int nextId_ = 1000;
 };

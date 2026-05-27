@@ -32,7 +32,8 @@ public:
         int     signalPct  = 0;   // 0..100
     };
 
-    explicit VehicleService(QObject *parent = nullptr);
+    static VehicleService &instance();
+
     ~VehicleService() override;
 
     Telemetry latest() const { return latest_; }
@@ -59,6 +60,9 @@ private slots:
     void onFrameReceived(quint8 type, const QByteArray &payload);
 
 private:
+    explicit VehicleService(QObject *parent = nullptr);
+    Q_DISABLE_COPY_MOVE(VehicleService)
+
     pipesight::comm::TcpClient *client_ = nullptr;
     Telemetry                   latest_;
 };

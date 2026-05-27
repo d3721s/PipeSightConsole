@@ -45,10 +45,10 @@ Popup {
     }
 
     background: Rectangle {
-        color: snackbar.isError ? "#4a1f1f" : "#323232"
+        color: snackbar.isError ? "#4a1f1f" : "#173d2c"
         radius: 4
-        border.color: snackbar.isError ? "#ef5350" : "transparent"
-        border.width: snackbar.isError ? 1 : 0
+        border.color: snackbar.isError ? "#ef5350" : "#66bb6a"
+        border.width: 1
     }
 
     contentItem: Label {

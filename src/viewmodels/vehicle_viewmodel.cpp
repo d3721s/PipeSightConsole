@@ -2,7 +2,9 @@
 
 namespace pipesight::viewmodels {
 
-VehicleViewModel::VehicleViewModel(QObject *parent) : QObject(parent)
+VehicleViewModel::VehicleViewModel(QObject *parent)
+    : QObject(parent)
+    , service_(services::VehicleService::instance())
 {
     connect(&service_, &services::VehicleService::telemetryUpdated,
             this, [this](const services::VehicleService::Telemetry &t) {

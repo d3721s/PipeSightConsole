@@ -33,6 +33,10 @@ GroupBox {
 
     Component.onCompleted: reload()
 
+    AppConfirmDialog {
+        id: confirmDialog
+    }
+
     Connections {
         target: OsdViewModel
         function onOsdChanged() {
@@ -85,7 +89,8 @@ GroupBox {
                 text: qsTr("应用")
                 Layout.preferredWidth: 86
                 Layout.preferredHeight: osdPanel.fieldHeight
-                onClicked: osdPanel.applyConfig()
+                onClicked: confirmDialog.confirm(qsTr("确认应用OSD字幕叠加设置？"),
+                                                 function() { osdPanel.applyConfig() })
             }
         }
     }

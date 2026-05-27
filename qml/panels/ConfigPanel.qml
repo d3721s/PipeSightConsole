@@ -65,9 +65,23 @@ Item {
         notifyResult(ok, qsTr("激光雷达参数应用完成"), qsTr("激光雷达参数应用失败：后端未实现"))
     }
 
+    function applyRecordingConfig() {
+        const ok = ConfigViewModel.applyRecordingConfig(
+            segmentMinutesBox.value,
+            cyclicRecordSwitch.checked,
+            panel.storagePathDraft)
+        if (ok)
+            panel.storagePathDraft = ConfigViewModel.storagePath
+        panel.notifyResult(ok, qsTr("录像配置应用完成"), qsTr("录像配置应用失败：存储路径不可用"))
+    }
+
     Component.onCompleted: {
         loadLocalStereoParams()
         loadLocalRadarParams()
+    }
+
+    AppConfirmDialog {
+        id: confirmDialog
     }
 
     FolderDialog {
@@ -154,15 +168,8 @@ Item {
                         text: qsTr("应用")
                         Layout.preferredWidth: panel.buttonWidth
                         Layout.preferredHeight: panel.fieldHeight
-                        onClicked: {
-                            const ok = ConfigViewModel.applyRecordingConfig(
-                                segmentMinutesBox.value,
-                                cyclicRecordSwitch.checked,
-                                panel.storagePathDraft)
-                            if (ok)
-                                panel.storagePathDraft = ConfigViewModel.storagePath
-                            panel.notifyResult(ok, qsTr("录像配置应用完成"), qsTr("录像配置应用失败：存储路径不可用"))
-                        }
+                        onClicked: confirmDialog.confirm(qsTr("确认应用录像配置？"),
+                                                         function() { panel.applyRecordingConfig() })
                     }
                 }
             }
@@ -205,7 +212,8 @@ Item {
                         text: qsTr("应用")
                         Layout.preferredWidth: panel.buttonWidth
                         Layout.preferredHeight: panel.fieldHeight
-                        onClicked: panel.applyStereoParams()
+                        onClicked: confirmDialog.confirm(qsTr("确认应用双目相机参数？"),
+                                                         function() { panel.applyStereoParams() })
                     }
                 }
             }
@@ -238,7 +246,8 @@ Item {
                         text: qsTr("应用")
                         Layout.preferredWidth: panel.buttonWidth
                         Layout.preferredHeight: panel.fieldHeight
-                        onClicked: panel.applyRadarParams()
+                        onClicked: confirmDialog.confirm(qsTr("确认应用激光雷达参数？"),
+                                                         function() { panel.applyRadarParams() })
                     }
                 }
             }

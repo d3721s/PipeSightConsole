@@ -15,6 +15,12 @@ constexpr auto kInspectionUnit = "osd/inspectionUnit";
 
 } // namespace
 
+OsdService &OsdService::instance()
+{
+    static OsdService service;
+    return service;
+}
+
 OsdService::OsdService(QObject *parent) : QObject(parent)
 {
     loadSettings();

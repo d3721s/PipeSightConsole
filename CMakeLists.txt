@@ -31,6 +31,7 @@ set(SERVICE_SOURCES
     src/services/depth_camera_service.h     src/services/depth_camera_service.cpp
     src/services/vehicle_service.h          src/services/vehicle_service.cpp
     src/services/osd_service.h              src/services/osd_service.cpp
+    src/services/osd_renderer.h             src/services/osd_renderer.cpp
     src/services/recording_service.h        src/services/recording_service.cpp
     src/services/report_service.h           src/services/report_service.cpp
 )
@@ -67,6 +68,7 @@ set(QML_FILES
     qml/components/CameraConfigRow.qml
     qml/components/AppNotifier.qml
     qml/components/AppSnackbar.qml
+    qml/components/AppConfirmDialog.qml
 )
 
 # Keep the QML source layout (qml/, qml/panels/, qml/components/) on disk,
@@ -115,6 +117,13 @@ target_link_libraries(appPipeSightConsole PRIVATE
     Qt6::Multimedia
     Qt6::Concurrent
 )
+
+if (WIN32)
+    target_link_libraries(appPipeSightConsole PRIVATE
+        shell32
+        user32
+    )
+endif()
 
 if (ANDROID)
     target_link_options(appPipeSightConsole PRIVATE

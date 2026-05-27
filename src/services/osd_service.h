@@ -16,7 +16,8 @@ class OsdService : public QObject
 {
     Q_OBJECT
 public:
-    explicit OsdService(QObject *parent = nullptr);
+    static OsdService &instance();
+
     ~OsdService() override;
 
     bool    showProjectInfo() const { return showProject_; }
@@ -36,6 +37,9 @@ signals:
     void osdChanged();
 
 private:
+    explicit OsdService(QObject *parent = nullptr);
+    Q_DISABLE_COPY_MOVE(OsdService)
+
     void loadSettings();
 
     bool    showProject_   = true;

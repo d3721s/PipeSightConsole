@@ -66,6 +66,10 @@ GroupBox {
         function onCameraConfigChanged(ch) { if (ch === root.channel) root.reload() }
     }
 
+    AppConfirmDialog {
+        id: confirmDialog
+    }
+
     function reportConfig() {
         const ok = CameraViewModel.configureCamera(
             root.channel,
@@ -240,7 +244,8 @@ GroupBox {
                 text: qsTr("应用")
                 Layout.preferredWidth: root.buttonWidth
                 Layout.preferredHeight: root.fieldHeight
-                onClicked: root.reportConfig()
+                onClicked: confirmDialog.confirm(qsTr("确认应用%1？").arg(root.title),
+                                                 function() { root.reportConfig() })
             }
         }
     }

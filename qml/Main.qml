@@ -20,6 +20,10 @@ ApplicationWindow {
     Material.theme: Material.Dark
     Material.accent: Material.Cyan
 
+    Component.onCompleted: {
+        NativeNotifier.notify(qsTr("PipeSightConsole"), qsTr("PipeSightConsole 已启动"))
+    }
+
     Connections {
         target: CameraViewModel
         function onRecordingNotification(message, isError) {

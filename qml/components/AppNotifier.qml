@@ -22,6 +22,6 @@ QtObject {
     }
 
     function nativeError(title, message) {
-        NativeNotifier.notify(title, message)
+        NativeNotifier.notifyError(title, message)
     }
 }

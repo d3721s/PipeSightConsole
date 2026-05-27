@@ -39,7 +39,7 @@ signals:
     void osdChanged();
 
 private:
-    services::OsdService service_;
+    services::OsdService &service_;
 };
 
 } // namespace pipesight::viewmodels

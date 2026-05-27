@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <QUrl>
 
-#include "services/osd_service.h"
+#include "services/osd_renderer.h"
 #include "services/vehicle_service.h"
 
 class QProcess;
@@ -54,9 +54,9 @@ signals:
 
 private:
     void loadSettings();
-    void writeOsdText();
+    bool updateRecordingOsdText();
+    OsdTelemetry currentOsdTelemetry() const;
     QString buildOutputFilePath() const;
-    QString buildOsdTextFilePath() const;
     QStringList buildFfmpegArguments(const QUrl &sourceUrl, const QString &outputFile) const;
 
     bool    recording_       = false;
@@ -71,8 +71,8 @@ private:
 
     QProcess      *ffmpeg_ = nullptr;
     QTimer         osdTimer_;
-    OsdService     osd_;
-    VehicleService vehicle_;
+    OsdRenderer    osdRenderer_;
+    VehicleService &vehicle_;
 };
 
 } // namespace pipesight::services

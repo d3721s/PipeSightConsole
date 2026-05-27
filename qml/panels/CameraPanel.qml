@@ -10,6 +10,31 @@ Item {
     readonly property int controlPanelWidth: 230
     readonly property int controlSpacing: 8
 
+    component PtzButton: Button {
+        id: ptzButton
+        property int buttonSize: 58
+
+        width: buttonSize
+        height: buttonSize
+        padding: 0
+        font.pixelSize: 24
+
+        background: Rectangle {
+            radius: width / 2
+            color: ptzButton.down ? "#53545a" : (ptzButton.hovered ? "#48494f" : "#3f4045")
+            border.color: "#5b5b64"
+            border.width: 1
+        }
+
+        contentItem: Text {
+            text: ptzButton.text
+            color: "#e9edf3"
+            font: ptzButton.font
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+    }
+
     Item {
         anchors.fill: parent
         anchors.margins: 4
@@ -138,27 +163,72 @@ Item {
                     GroupBox {
                         title: qsTr("云台控制")
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 220
-                        Layout.minimumHeight: 156
+                        Layout.preferredHeight: 360
+                        Layout.minimumHeight: 336
 
-                        GridLayout {
-                            anchors.fill: parent
-                            columns: 3
-                            uniformCellWidths: true
-                            uniformCellHeights: true
-                            rowSpacing: 4; columnSpacing: 4
+                        Item {
+                            id: ptzPad
+                            readonly property int buttonSize: 58
+                            readonly property int gapX: 13
+                            readonly property int gapY: 8
 
-                            Button { text: qsTr("远"); Layout.fillWidth: true; Layout.fillHeight: true; onPressed: CameraViewModel.zoom(-1); onReleased: CameraViewModel.zoom(0) }
-                            Button { text: "↑"; Layout.fillWidth: true; Layout.fillHeight: true; onPressed: CameraViewModel.pan(0, -1); onReleased: CameraViewModel.pan(0,0) }
-                            Button { text: qsTr("近"); Layout.fillWidth: true; Layout.fillHeight: true; onPressed: CameraViewModel.zoom(1); onReleased: CameraViewModel.zoom(0) }
+                            width: buttonSize * 3 + gapX * 2
+                            height: buttonSize * 5 + gapY * 4
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.verticalCenter: parent.verticalCenter
 
-                            Button { text: "←"; Layout.fillWidth: true; Layout.fillHeight: true; onPressed: CameraViewModel.pan(-1, 0); onReleased: CameraViewModel.pan(0,0) }
-                            Button { text: qsTr("归中"); Layout.fillWidth: true; Layout.fillHeight: true /* TODO: home gimbal */ }
-                            Button { text: "→"; Layout.fillWidth: true; Layout.fillHeight: true; onPressed: CameraViewModel.pan(1, 0); onReleased: CameraViewModel.pan(0,0) }
+                            PtzButton {
+                                text: "^"
+                                buttonSize: ptzPad.buttonSize
+                                x: ptzPad.buttonSize + ptzPad.gapX
+                                y: 0
+                                onPressed: CameraViewModel.pan(0, -1)
+                                onReleased: CameraViewModel.pan(0, 0)
+                            }
 
-                            Item {}
-                            Button { text: "↓"; Layout.fillWidth: true; Layout.fillHeight: true; onPressed: CameraViewModel.pan(0, 1); onReleased: CameraViewModel.pan(0,0) }
-                            Item {}
+                            PtzButton {
+                                text: "<"
+                                buttonSize: ptzPad.buttonSize
+                                x: 0
+                                y: ptzPad.buttonSize + ptzPad.gapY
+                                onPressed: CameraViewModel.pan(-1, 0)
+                                onReleased: CameraViewModel.pan(0, 0)
+                            }
+                            PtzButton {
+                                text: ">"
+                                buttonSize: ptzPad.buttonSize
+                                x: (ptzPad.buttonSize + ptzPad.gapX) * 2
+                                y: ptzPad.buttonSize + ptzPad.gapY
+                                onPressed: CameraViewModel.pan(1, 0)
+                                onReleased: CameraViewModel.pan(0, 0)
+                            }
+
+                            PtzButton {
+                                text: "v"
+                                buttonSize: ptzPad.buttonSize
+                                x: ptzPad.buttonSize + ptzPad.gapX
+                                y: (ptzPad.buttonSize + ptzPad.gapY) * 2
+                                onPressed: CameraViewModel.pan(0, 1)
+                                onReleased: CameraViewModel.pan(0, 0)
+                            }
+
+                            PtzButton {
+                                text: "+"
+                                buttonSize: ptzPad.buttonSize
+                                x: (ptzPad.buttonSize + ptzPad.gapX) * 2
+                                y: (ptzPad.buttonSize + ptzPad.gapY) * 3
+                                onPressed: CameraViewModel.zoom(1)
+                                onReleased: CameraViewModel.zoom(0)
+                            }
+
+                            PtzButton {
+                                text: "-"
+                                buttonSize: ptzPad.buttonSize
+                                x: (ptzPad.buttonSize + ptzPad.gapX) * 2
+                                y: (ptzPad.buttonSize + ptzPad.gapY) * 4
+                                onPressed: CameraViewModel.zoom(-1)
+                                onReleased: CameraViewModel.zoom(0)
+                            }
                         }
                     }
                 }
