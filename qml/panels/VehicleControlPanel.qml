@@ -4,18 +4,22 @@ import QtQuick.Layouts
 import PipeSightConsole
 
 Item {
-    ScrollView {
+    Flickable {
         id: scroller
         anchors.fill: parent
         clip: true
-        contentWidth: availableWidth
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+        contentWidth: width
+        contentHeight: scrollContent.implicitHeight
+        interactive: contentHeight > height
+        boundsBehavior: interactive ? Flickable.DragAndOvershootBounds : Flickable.StopAtBounds
+        ScrollBar.horizontal: ScrollBar { policy: ScrollBar.AlwaysOff }
+        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
 
         Item {
-            width: scroller.availableWidth
+            id: scrollContent
+            width: scroller.width
             height: contentLayout.implicitHeight + 24
-            implicitWidth: scroller.availableWidth
+            implicitWidth: scroller.width
             implicitHeight: contentLayout.implicitHeight + 24
 
             ColumnLayout {
