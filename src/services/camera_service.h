@@ -18,9 +18,15 @@ struct CameraConfig
     QString username;
     QString password;
     QString ip;
-    quint16 port    = 554;
-    int     channel = 1;   // 1-based RTSP channel index
-    int     subtype = 0;   // 0 = main stream, 1 = sub stream
+    quint16 rtspPort  = 554;
+    quint16 onvifPort = 80;
+    int     channel   = 1;   // 1-based RTSP channel index
+    int     subtype   = 0;   // 0 = main stream, 1 = sub stream
+
+    QString mainResolution = QStringLiteral("1920x1080");
+    int     mainFps        = 25;
+    QString subResolution  = QStringLiteral("704x576");
+    int     subFps         = 25;
 
     bool isComplete() const { return !ip.isEmpty(); }
 };

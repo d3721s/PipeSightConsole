@@ -44,11 +44,11 @@ ApplicationWindow {
         id: tabs
         width: parent.width
         TabButton { text: qsTr("摄像头") }
-        TabButton { text: qsTr("激光雷达") }
         TabButton { text: qsTr("深度相机") }
+        TabButton { text: qsTr("激光雷达") }
         TabButton { text: qsTr("移动底盘") }
-        TabButton { text: qsTr("配置") }
         TabButton { text: qsTr("高级") }
+        TabButton { text: qsTr("配置") }
     }
 
     StackLayout {
@@ -59,8 +59,8 @@ ApplicationWindow {
         currentIndex: tabs.currentIndex
 
         CameraPanel {}
-        LaserPanel {}
         DepthCameraPanel {}
+        LaserPanel {}
         // Vehicle tab keeps left/right panes fixed; each pane scrolls vertically.
         Item {
             VehicleInfoPanel {
@@ -78,7 +78,7 @@ ApplicationWindow {
                 anchors.bottom: parent.bottom
             }
         }
-        ConfigPanel {}
         AdvancedPanel {}
+        ConfigPanel {}
     }
 }

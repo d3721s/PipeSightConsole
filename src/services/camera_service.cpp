@@ -80,7 +80,7 @@ QUrl CameraService::buildUrl(const CameraConfig &cfg)
             url.setPassword(cfg.password);
     }
     url.setHost(cfg.ip);
-    url.setPort(cfg.port);
+    url.setPort(cfg.rtspPort);
     url.setPath(QStringLiteral("/cam/realmonitor"));
 
     QUrlQuery q;
@@ -102,12 +102,17 @@ CameraConfig CameraService::loadConfig(Channel ch) const
     auto &s = AppSettings::instance();
     const QString p = settingsPrefix(ch);
     CameraConfig cfg;
-    cfg.username = s.value(p + QStringLiteral("username")).toString();
-    cfg.password = s.value(p + QStringLiteral("password")).toString();
-    cfg.ip       = s.value(p + QStringLiteral("ip")).toString();
-    cfg.port     = static_cast<quint16>(s.value(p + QStringLiteral("port"), 554).toUInt());
-    cfg.channel  = s.value(p + QStringLiteral("channel"), 1).toInt();
-    cfg.subtype  = s.value(p + QStringLiteral("subtype"), 0).toInt();
+    cfg.username       = s.value(p + QStringLiteral("username")).toString();
+    cfg.password       = s.value(p + QStringLiteral("password")).toString();
+    cfg.ip             = s.value(p + QStringLiteral("ip")).toString();
+    cfg.rtspPort       = static_cast<quint16>(s.value(p + QStringLiteral("rtspPort"), 554).toUInt());
+    cfg.onvifPort      = static_cast<quint16>(s.value(p + QStringLiteral("onvifPort"), 80).toUInt());
+    cfg.channel        = s.value(p + QStringLiteral("channel"), 1).toInt();
+    cfg.subtype        = s.value(p + QStringLiteral("subtype"), 0).toInt();
+    cfg.mainResolution = s.value(p + QStringLiteral("mainResolution"), QStringLiteral("1920x1080")).toString();
+    cfg.mainFps        = s.value(p + QStringLiteral("mainFps"), 25).toInt();
+    cfg.subResolution  = s.value(p + QStringLiteral("subResolution"), QStringLiteral("704x576")).toString();
+    cfg.subFps         = s.value(p + QStringLiteral("subFps"), 25).toInt();
     return cfg;
 }
 
@@ -115,12 +120,17 @@ void CameraService::saveConfig(Channel ch, const CameraConfig &cfg) const
 {
     auto &s = AppSettings::instance();
     const QString p = settingsPrefix(ch);
-    s.setValue(p + QStringLiteral("username"), cfg.username);
-    s.setValue(p + QStringLiteral("password"), cfg.password);
-    s.setValue(p + QStringLiteral("ip"),       cfg.ip);
-    s.setValue(p + QStringLiteral("port"),     cfg.port);
-    s.setValue(p + QStringLiteral("channel"),  cfg.channel);
-    s.setValue(p + QStringLiteral("subtype"),  cfg.subtype);
+    s.setValue(p + QStringLiteral("username"),       cfg.username);
+    s.setValue(p + QStringLiteral("password"),       cfg.password);
+    s.setValue(p + QStringLiteral("ip"),             cfg.ip);
+    s.setValue(p + QStringLiteral("rtspPort"),       cfg.rtspPort);
+    s.setValue(p + QStringLiteral("onvifPort"),      cfg.onvifPort);
+    s.setValue(p + QStringLiteral("channel"),        cfg.channel);
+    s.setValue(p + QStringLiteral("subtype"),        cfg.subtype);
+    s.setValue(p + QStringLiteral("mainResolution"), cfg.mainResolution);
+    s.setValue(p + QStringLiteral("mainFps"),        cfg.mainFps);
+    s.setValue(p + QStringLiteral("subResolution"),  cfg.subResolution);
+    s.setValue(p + QStringLiteral("subFps"),         cfg.subFps);
 }
 
 void CameraService::onFrameReceived(quint8 type, const QByteArray &payload)

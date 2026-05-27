@@ -41,9 +41,14 @@ public:
                                      const QString &username,
                                      const QString &password,
                                      const QString &ip,
-                                     int port,
+                                     int rtspPort,
+                                     int onvifPort,
                                      int rtspChannel,
-                                     int subtype);
+                                     int subtype,
+                                     const QString &mainResolution,
+                                     int mainFps,
+                                     const QString &subResolution,
+                                     int subFps);
 
     Q_INVOKABLE QVariantMap cameraConfig(int channel) const;
     Q_INVOKABLE QString     cameraStreamUrl(int channel) const;

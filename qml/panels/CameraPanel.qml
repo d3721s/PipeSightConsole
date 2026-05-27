@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.Material
 import QtQuick.Layouts
 import PipeSightConsole
 
@@ -119,7 +120,7 @@ Item {
                                 text: CameraViewModel.recording ? qsTr("停止录像") : qsTr("开始录像")
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: panel.controlButtonHeight
-                                palette.buttonText: CameraViewModel.recording ? "#e53935" : palette.windowText
+                                Material.foreground: CameraViewModel.recording ? "#e53935" : undefined
                                 onClicked: CameraViewModel.recording
                                             ? CameraViewModel.stopRecording()
                                             : CameraViewModel.startRecording()

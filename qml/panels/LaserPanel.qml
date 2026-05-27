@@ -6,7 +6,7 @@ import PipeSightConsole
 Item {
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 8
+        anchors.margins: 4
         spacing: 8
 
         // Center: stereo / point-cloud display placeholder.

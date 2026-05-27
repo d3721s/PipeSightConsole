@@ -48,17 +48,27 @@ void CameraViewModel::configureCamera(int channel,
                                       const QString &username,
                                       const QString &password,
                                       const QString &ip,
-                                      int port,
+                                      int rtspPort,
+                                      int onvifPort,
                                       int rtspChannel,
-                                      int subtype)
+                                      int subtype,
+                                      const QString &mainResolution,
+                                      int mainFps,
+                                      const QString &subResolution,
+                                      int subFps)
 {
     services::CameraConfig cfg;
-    cfg.username = username;
-    cfg.password = password;
-    cfg.ip       = ip;
-    cfg.port     = static_cast<quint16>(port);
-    cfg.channel  = rtspChannel;
-    cfg.subtype  = subtype;
+    cfg.username       = username;
+    cfg.password       = password;
+    cfg.ip             = ip;
+    cfg.rtspPort       = static_cast<quint16>(rtspPort);
+    cfg.onvifPort      = static_cast<quint16>(onvifPort);
+    cfg.channel        = rtspChannel;
+    cfg.subtype        = subtype;
+    cfg.mainResolution = mainResolution;
+    cfg.mainFps        = mainFps;
+    cfg.subResolution  = subResolution;
+    cfg.subFps         = subFps;
     service_.configureCamera(static_cast<CameraService::Channel>(channel), cfg);
 }
 
@@ -66,12 +76,17 @@ QVariantMap CameraViewModel::cameraConfig(int channel) const
 {
     const auto cfg = service_.config(static_cast<CameraService::Channel>(channel));
     QVariantMap m;
-    m.insert(QStringLiteral("username"), cfg.username);
-    m.insert(QStringLiteral("password"), cfg.password);
-    m.insert(QStringLiteral("ip"),       cfg.ip);
-    m.insert(QStringLiteral("port"),     cfg.port);
-    m.insert(QStringLiteral("channel"),  cfg.channel);
-    m.insert(QStringLiteral("subtype"),  cfg.subtype);
+    m.insert(QStringLiteral("username"),       cfg.username);
+    m.insert(QStringLiteral("password"),       cfg.password);
+    m.insert(QStringLiteral("ip"),             cfg.ip);
+    m.insert(QStringLiteral("rtspPort"),       cfg.rtspPort);
+    m.insert(QStringLiteral("onvifPort"),      cfg.onvifPort);
+    m.insert(QStringLiteral("channel"),        cfg.channel);
+    m.insert(QStringLiteral("subtype"),        cfg.subtype);
+    m.insert(QStringLiteral("mainResolution"), cfg.mainResolution);
+    m.insert(QStringLiteral("mainFps"),        cfg.mainFps);
+    m.insert(QStringLiteral("subResolution"),  cfg.subResolution);
+    m.insert(QStringLiteral("subFps"),         cfg.subFps);
     return m;
 }
 

@@ -23,7 +23,7 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
-                anchors.margins: 12
+                anchors.margins: 4
                 spacing: 12
 
                 GroupBox {

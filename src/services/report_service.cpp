@@ -2,7 +2,9 @@
 #include <QStandardPaths>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QFile>
 #include <QFileInfo>
+#include <QDir>
 
 namespace pipesight::services {
 
@@ -29,8 +31,13 @@ QString ReportService::systemLogPath() const
 bool ReportService::openSystemLog() const
 {
     const QString path = systemLogPath();
-    if (!QFileInfo::exists(path))
-        return false;
+    if (!QFileInfo::exists(path)) {
+        QDir().mkpath(QFileInfo(path).absolutePath());
+        QFile f(path);
+        if (!f.open(QIODevice::WriteOnly | QIODevice::Append))
+            return false;
+        f.close();
+    }
     return QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 

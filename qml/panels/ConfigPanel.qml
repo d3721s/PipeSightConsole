@@ -12,6 +12,7 @@ Item {
 
     ScrollView {
         anchors.fill: parent
+        anchors.margins: 4
         contentWidth: width
 
         ColumnLayout {
