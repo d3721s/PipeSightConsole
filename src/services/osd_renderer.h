@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDateTime>
+#include <QImage>
 #include <QString>
 
 namespace pipesight::services {
@@ -24,6 +25,9 @@ public:
     explicit OsdRenderer(const OsdService &osd);
 
     QString buildText(const OsdTelemetry &telemetry, const QDateTime &timestamp = {}) const;
+    QImage renderImage(const QImage &source,
+                       const OsdTelemetry &telemetry,
+                       const QDateTime &timestamp = {}) const;
     bool writeTextFile(const QString &filePath,
                        const OsdTelemetry &telemetry,
                        QString *errorMessage = nullptr,

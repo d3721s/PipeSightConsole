@@ -38,7 +38,8 @@ public slots:
     void startRecording();
     void startRecording(const QUrl &sourceUrl);
     void stopRecording();
-    void takeSnapshot();   // saves a still from active video into storagePath_
+    void takeSnapshot();
+    void takeSnapshot(const QUrl &sourceUrl);
 
     void setResolution(int width, int height);
     void setCodec(Codec c);
@@ -57,6 +58,7 @@ private:
     bool updateRecordingOsdText();
     OsdTelemetry currentOsdTelemetry() const;
     QString buildOutputFilePath() const;
+    QString buildSnapshotFilePath() const;
     QStringList buildFfmpegArguments(const QUrl &sourceUrl, const QString &outputFile) const;
 
     bool    recording_       = false;

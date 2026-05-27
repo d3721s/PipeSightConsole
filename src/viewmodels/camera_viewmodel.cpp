@@ -31,6 +31,10 @@ CameraViewModel::CameraViewModel(QObject *parent)
             this, [this](const QString &msg) {
                 emit recordingNotification(msg, true);
             });
+    connect(&recording_, &services::RecordingService::snapshotSaved,
+            this, [this](const QString &filePath) {
+                emit recordingNotification(QStringLiteral("拍照已保存：%1").arg(filePath), false);
+            });
 }
 
 CameraViewModel::~CameraViewModel() = default;
@@ -52,7 +56,7 @@ void CameraViewModel::stopRecording()
 
 void CameraViewModel::snapshot()
 {
-    recording_.takeSnapshot();
+    recording_.takeSnapshot(streamUrl());
 }
 
 bool CameraViewModel::configureCamera(int channel,

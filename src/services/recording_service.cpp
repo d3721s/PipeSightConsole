@@ -4,9 +4,13 @@
 #include <QDateTime>
 #include <QDir>
 #include <QFileInfo>
+#include <QMediaPlayer>
 #include <QProcess>
+#include <QSharedPointer>
 #include <QStandardPaths>
 #include <QStringList>
+#include <QVideoFrame>
+#include <QVideoSink>
 
 namespace pipesight::services {
 
@@ -141,8 +145,85 @@ void RecordingService::stopRecording()
 
 void RecordingService::takeSnapshot()
 {
-    // TODO: capture current frame from CameraService's QVideoSink and save as JPEG
-    emit snapshotSaved(storagePath_ + QStringLiteral("/snapshot.jpg"));
+    emit errorOccurred(QStringLiteral("未提供拍照视频源"));
+}
+
+void RecordingService::takeSnapshot(const QUrl &sourceUrl)
+{
+    if (!sourceUrl.isValid() || sourceUrl.isEmpty()) {
+        emit errorOccurred(QStringLiteral("RTSP 视频源为空，无法拍照"));
+        return;
+    }
+
+    loadSettings();
+
+    auto *player = new QMediaPlayer(this);
+    auto *sink = new QVideoSink(player);
+    auto *timeout = new QTimer(player);
+    timeout->setSingleShot(true);
+    timeout->setInterval(10000);
+
+    const auto finished = QSharedPointer<bool>::create(false);
+    auto finish = [player, timeout, finished]() {
+        if (*finished)
+            return false;
+
+        *finished = true;
+        timeout->stop();
+        player->stop();
+        player->deleteLater();
+        return true;
+    };
+
+    connect(timeout, &QTimer::timeout, this, [this, finish]() mutable {
+        if (finish())
+            emit errorOccurred(QStringLiteral("拍照超时，未获取到视频帧"));
+    });
+
+    connect(player, &QMediaPlayer::errorOccurred,
+            this, [this, finish](QMediaPlayer::Error error, const QString &errorString) mutable {
+                if (error == QMediaPlayer::NoError || !finish())
+                    return;
+
+                emit errorOccurred(errorString.isEmpty()
+                                       ? QStringLiteral("拍照视频源打开失败")
+                                       : QStringLiteral("拍照视频源打开失败：%1").arg(errorString));
+            });
+
+    connect(sink, &QVideoSink::videoFrameChanged,
+            this, [this, finish](const QVideoFrame &frame) mutable {
+                if (!frame.isValid())
+                    return;
+                if (!finish())
+                    return;
+
+                QImage image = frame.toImage();
+                if (image.isNull()) {
+                    emit errorOccurred(QStringLiteral("拍照失败：视频帧无法转换为图片"));
+                    return;
+                }
+
+                image = osdRenderer_.renderImage(image, currentOsdTelemetry());
+
+                const QString filePath = buildSnapshotFilePath();
+                const QString dir = QFileInfo(filePath).absolutePath();
+                if (!QDir().mkpath(dir)) {
+                    emit errorOccurred(QStringLiteral("无法创建拍照存储目录：%1").arg(dir));
+                    return;
+                }
+
+                if (!image.save(filePath, "JPEG", 95)) {
+                    emit errorOccurred(QStringLiteral("拍照保存失败：%1").arg(filePath));
+                    return;
+                }
+
+                emit snapshotSaved(filePath);
+            });
+
+    player->setVideoSink(sink);
+    player->setSource(sourceUrl);
+    timeout->start();
+    player->play();
 }
 
 void RecordingService::setResolution(int w, int h)
@@ -211,6 +292,14 @@ QString RecordingService::buildOutputFilePath() const
 {
     const QString name = QStringLiteral("PipeSight_%1.mp4")
                              .arg(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMdd_HHmmss")));
+    return QDir(storagePath_).filePath(name);
+}
+
+QString RecordingService::buildSnapshotFilePath() const
+{
+    const QString name = QStringLiteral("PipeSight_snapshot_%1.jpg")
+                             .arg(QDateTime::currentDateTime().toString(
+                                 QStringLiteral("yyyyMMdd_HHmmss_zzz")));
     return QDir(storagePath_).filePath(name);
 }
 

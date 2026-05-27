@@ -2,9 +2,13 @@
 #include "osd_service.h"
 
 #include <QByteArray>
+#include <QColor>
 #include <QDir>
+#include <QFont>
+#include <QFontMetrics>
 #include <QFileInfo>
 #include <QIODevice>
+#include <QPainter>
 #include <QSaveFile>
 #include <QStandardPaths>
 #include <QStringList>
@@ -61,6 +65,50 @@ QString OsdRenderer::buildText(const OsdTelemetry &telemetry, const QDateTime &t
     }
 
     return lines.join(QLatin1Char('\n'));
+}
+
+QImage OsdRenderer::renderImage(const QImage &source,
+                                const OsdTelemetry &telemetry,
+                                const QDateTime &timestamp) const
+{
+    if (source.isNull())
+        return {};
+
+    const QString text = buildText(telemetry, timestamp);
+    if (text.isEmpty())
+        return source;
+
+    QImage image = source.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+    QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::TextAntialiasing);
+
+    QFont font(QStringLiteral("Microsoft YaHei"));
+    font.setPixelSize(24);
+    painter.setFont(font);
+
+    constexpr int margin = 20;
+    constexpr int padding = 8;
+    const QRect available(margin + padding,
+                          margin + padding,
+                          qMax(0, image.width() - (margin + padding) * 2),
+                          qMax(0, image.height() - (margin + padding) * 2));
+    const int flags = Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap;
+    const QRect textRect = QFontMetrics(font).boundingRect(available, flags, text);
+    const QRect boxRect = textRect.adjusted(-padding, -padding, padding, padding);
+
+    painter.fillRect(boxRect, QColor(0, 0, 0, 90));
+    painter.setPen(QColor(0, 0, 0));
+    for (int dx = -2; dx <= 2; ++dx) {
+        for (int dy = -2; dy <= 2; ++dy) {
+            if (dx == 0 && dy == 0) continue;
+            painter.drawText(textRect.translated(dx, dy), flags, text);
+        }
+    }
+
+    painter.setPen(Qt::white);
+    painter.drawText(textRect, flags, text);
+    return image;
 }
 
 bool OsdRenderer::writeTextFile(const QString &filePath,

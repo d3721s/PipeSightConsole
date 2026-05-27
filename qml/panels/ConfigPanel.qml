@@ -122,7 +122,7 @@ Item {
 
             // ---- Recording ----
             GroupBox {
-                title: qsTr("录像配置")
+                title: qsTr("摄录配置")
                 Layout.fillWidth: true
                 RowLayout {
                     width: parent.width
@@ -168,7 +168,7 @@ Item {
                         text: qsTr("应用")
                         Layout.preferredWidth: panel.buttonWidth
                         Layout.preferredHeight: panel.fieldHeight
-                        onClicked: confirmDialog.confirm(qsTr("确认应用录像配置？"),
+                        onClicked: confirmDialog.confirm(qsTr("确认应用摄录配置？"),
                                                          function() { panel.applyRecordingConfig() })
                     }
                 }
