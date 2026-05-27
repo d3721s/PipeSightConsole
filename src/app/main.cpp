@@ -13,11 +13,6 @@
 
 #include "native_notifier.h"
 
-#ifdef Q_OS_ANDROID
-#include <QtCore/QJniObject>
-#include <QtCore/qcoreapplication_platform.h>
-#endif
-
 namespace {
 
 QFile *g_logFile = nullptr;
@@ -72,18 +67,6 @@ void setupLogging() {
   qInfo() << "PipeSight Console started";
 }
 
-void applyAndroidImmersiveStatusBar() {
-#ifdef Q_OS_ANDROID
-  const QJniObject context = QNativeInterface::QAndroidApplication::context();
-  if (!context.isValid())
-    return;
-
-  QJniObject::callStaticMethod<jboolean>(
-      "org/pipesight/console/NativeSystemUi", "applyImmersiveStatusBar",
-      "(Landroid/content/Context;)Z", context.object<jobject>());
-#endif
-}
-
 } // namespace
 
 int main(int argc, char *argv[]) {
@@ -100,8 +83,6 @@ int main(int argc, char *argv[]) {
                         QStringLiteral("Main"));
   if (engine.rootObjects().isEmpty())
     return -1;
-
-  applyAndroidImmersiveStatusBar();
 
   QTimer::singleShot(0, [] {
     pipesight::viewmodels::NativeNotifier notifier;
