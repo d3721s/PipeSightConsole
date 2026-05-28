@@ -7,17 +7,21 @@ import PipeSightConsole
 Item {
     id: panel
 
-    ScrollView {
+    Flickable {
         id: scroller
         anchors.fill: parent
         clip: true
-        contentWidth: availableWidth
-        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+        contentWidth: width
+        contentHeight: scrollContent.implicitHeight
+        interactive: contentHeight > height
+        boundsBehavior: interactive ? Flickable.DragAndOvershootBounds : Flickable.StopAtBounds
+        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
 
         Item {
-            width: scroller.availableWidth
+            id: scrollContent
+            width: scroller.width
             height: contentLayout.implicitHeight + 32
-            implicitWidth: scroller.availableWidth
+            implicitWidth: scroller.width
             implicitHeight: contentLayout.implicitHeight + 32
 
             ColumnLayout {

@@ -28,10 +28,7 @@ signals:
     void notificationFailed(QString message);
 
 private:
-    int nextNotificationId();
     bool sendNotification(const QString &title, const QString &message, bool isError);
-
-    int nextId_ = 1000;
 };
 
 } // namespace pipesight::viewmodels

@@ -9,6 +9,9 @@
 #include <QQuickStyle>
 #include <QStandardPaths>
 #include <QTextStream>
+#include <QTimer>
+
+#include "native_notifier.h"
 
 namespace {
 
@@ -80,6 +83,12 @@ int main(int argc, char *argv[]) {
                         QStringLiteral("Main"));
   if (engine.rootObjects().isEmpty())
     return -1;
+
+  QTimer::singleShot(0, [] {
+    pipesight::viewmodels::NativeNotifier notifier;
+    notifier.notify(QStringLiteral("PipeSightConsole"),
+                    QStringLiteral("PipeSightConsole 已启动"));
+  });
 
   return app.exec();
 }

@@ -36,6 +36,7 @@ QString fallbackMessage(const QString &title, const QString &message)
 
 #ifdef Q_OS_ANDROID
 constexpr auto kNativeNotificationClass = "org/pipesight/console/NativeNotification";
+constexpr int kAndroidOngoingNotificationId = 1000;
 
 QJniObject androidContext()
 {
@@ -204,7 +205,7 @@ bool NativeNotifier::sendNotification(const QString &title, const QString &messa
         context.object<jobject>(),
         jTitle.object<jstring>(),
         jMessage.object<jstring>(),
-        nextNotificationId());
+        kAndroidOngoingNotificationId);
 
     if (!delivered)
         emit notificationFailed(QStringLiteral("系统通知未发送，请检查 Android 通知权限"));
@@ -219,13 +220,6 @@ bool NativeNotifier::sendNotification(const QString &title, const QString &messa
     emit notificationFailed(fallbackMessage(safeTitle, safeMessage));
     return false;
 #endif
-}
-
-int NativeNotifier::nextNotificationId()
-{
-    if (nextId_ == 999999)
-        nextId_ = 1000;
-    return nextId_++;
 }
 
 } // namespace pipesight::viewmodels

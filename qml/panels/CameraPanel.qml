@@ -44,8 +44,8 @@ Item {
             anchors.left: parent.left
             anchors.top: parent.top
             anchors.bottom: parent.bottom
-            anchors.right: controlsPane.left
-            anchors.rightMargin: 6
+            anchors.right: parent.right
+            anchors.rightMargin: panel.controlPanelWidth + 6
 
             VideoView {
                 id: video
@@ -55,21 +55,25 @@ Item {
         }
 
         // Right-side panel is fixed horizontally; its contents may scroll vertically.
-        ScrollView {
+        Flickable {
             id: controlsPane
             width: panel.controlPanelWidth
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             clip: true
-            contentWidth: availableWidth
-            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-            ScrollBar.vertical.policy: ScrollBar.AsNeeded
+            contentWidth: width
+            contentHeight: scrollContent.implicitHeight
+            interactive: contentHeight > height
+            boundsBehavior: interactive ? Flickable.DragAndOvershootBounds : Flickable.StopAtBounds
+            ScrollBar.horizontal: ScrollBar { policy: ScrollBar.AlwaysOff }
+            ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
 
             Item {
-                width: controlsPane.availableWidth
+                id: scrollContent
+                width: controlsPane.width
                 height: controlsLayout.implicitHeight
-                implicitWidth: controlsPane.availableWidth
+                implicitWidth: controlsPane.width
                 implicitHeight: controlsLayout.implicitHeight
 
                 ColumnLayout {
@@ -83,21 +87,27 @@ Item {
                     GroupBox {
                         title: qsTr("变焦")
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 76
 
                         RowLayout {
                             anchors.fill: parent
                             spacing: 6
 
-                            Label { text: qsTr("远") }
+                            Label {
+                                text: qsTr("远")
+                                Layout.alignment: Qt.AlignVCenter
+                            }
                             Slider {
                                 id: zoomSlider
                                 from: -1; to: 1; value: 0
                                 Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignVCenter
                                 onMoved: CameraViewModel.zoom(value)
                                 onPressedChanged: if (!pressed) value = 0
                             }
-                            Label { text: qsTr("近") }
+                            Label {
+                                text: qsTr("近")
+                                Layout.alignment: Qt.AlignVCenter
+                            }
                         }
                     }
 

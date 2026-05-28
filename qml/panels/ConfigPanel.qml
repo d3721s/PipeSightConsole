@@ -91,12 +91,19 @@ Item {
         onAccepted: storagePathDraft = panel.localPathFromUrl(selectedFolder)
     }
 
-    ScrollView {
+    Flickable {
         anchors.fill: parent
         anchors.margins: 4
         contentWidth: width
+        contentHeight: contentLayout.implicitHeight
+        interactive: contentHeight > height
+        boundsBehavior: interactive ? Flickable.DragAndOvershootBounds : Flickable.StopAtBounds
+        clip: true
+        ScrollBar.horizontal: ScrollBar { policy: ScrollBar.AlwaysOff }
+        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
 
         ColumnLayout {
+            id: contentLayout
             width: parent.width
             spacing: 10
 

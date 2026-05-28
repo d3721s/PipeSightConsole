@@ -7,6 +7,7 @@ import PipeSightConsole
 ApplicationWindow {
     id: root
     readonly property bool isAndroid: Qt.platform.os === "android"
+    property bool backExitArmed: false
 
     width: 1280
     height: 800
@@ -20,8 +21,26 @@ ApplicationWindow {
     Material.theme: Material.Dark
     Material.accent: Material.Cyan
 
-    Component.onCompleted: {
-        NativeNotifier.notify(qsTr("PipeSightConsole"), qsTr("PipeSightConsole 已启动"))
+    onClosing: function(close) {
+        if (!root.isAndroid)
+            return
+
+        if (root.backExitArmed) {
+            backExitResetTimer.stop()
+            return
+        }
+
+        close.accepted = false
+        root.backExitArmed = true
+        AppNotifier.info(qsTr("再按一次返回退出"))
+        backExitResetTimer.restart()
+    }
+
+    Timer {
+        id: backExitResetTimer
+        interval: 2000
+        repeat: false
+        onTriggered: root.backExitArmed = false
     }
 
     Connections {
