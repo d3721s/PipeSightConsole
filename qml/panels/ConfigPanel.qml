@@ -164,7 +164,7 @@ Item {
                     }
                     Label { text: qsTr("存储路径") }
                     Rectangle {
-                        Layout.preferredWidth: 420
+                        Layout.preferredWidth: 300
                         Layout.preferredHeight: panel.fieldHeight
                         color: "transparent"
                         border.color: "#5b5b64"
