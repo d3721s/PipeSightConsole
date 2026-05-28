@@ -39,12 +39,12 @@ Item {
         const ok = ConfigViewModel.readStereoParams()
         if (ok)
             loadLocalStereoParams()
-        notifyResult(ok, qsTr("双目相机参数读取完成"), qsTr("双目相机参数读取失败：后端未实现"))
+        notifyResult(ok, qsTr("深度相机参数读取完成"), qsTr("深度相机参数读取失败：后端未实现"))
     }
 
     function applyStereoParams() {
         const ok = ConfigViewModel.applyStereoParams(exp.value, wbBox.currentText, syncExposure.checked)
-        notifyResult(ok, qsTr("双目相机参数应用完成"), qsTr("双目相机参数应用失败：后端未实现"))
+        notifyResult(ok, qsTr("深度相机参数应用完成"), qsTr("深度相机参数应用失败：后端未实现"))
     }
 
     function loadLocalRadarParams() {
@@ -188,7 +188,7 @@ Item {
 
             // ---- Stereo ----
             GroupBox {
-                title: qsTr("双目相机配置")
+                title: qsTr("深度相机配置")
                 Layout.fillWidth: true
                 RowLayout {
                     width: parent.width
@@ -219,7 +219,7 @@ Item {
                         text: qsTr("应用")
                         Layout.preferredWidth: panel.buttonWidth
                         Layout.preferredHeight: panel.fieldHeight
-                        onClicked: confirmDialog.confirm(qsTr("确认应用双目相机参数？"),
+                        onClicked: confirmDialog.confirm(qsTr("确认应用深度相机参数？"),
                                                          function() { panel.applyStereoParams() })
                     }
                 }

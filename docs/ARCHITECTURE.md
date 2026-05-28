@@ -78,7 +78,7 @@ PipeSightConsole/
 │   │   └── connection_manager.{h,cpp}
 │   ├── services/
 │   │   ├── camera_service.{h,cpp}      ← 摄像头区域 + 配置/摄像头1,2
-│   │   ├── laser_service.{h,cpp}       ← 激光/双目摄像头区域
+│   │   ├── laser_service.{h,cpp}       ← 激光/深度摄像头区域
 │   │   ├── vehicle_service.{h,cpp}     ← 小车信息 + 控制 + 灯光
 │   │   ├── osd_service.{h,cpp}         ← OSD 字幕
 │   │   ├── recording_service.{h,cpp}   ← 录像配置 + 文件管理
@@ -97,7 +97,7 @@ PipeSightConsole/
 │   ├── Main.qml                       ← 应用窗口、Tab/分屏布局
 │   ├── panels/
 │   │   ├── CameraPanel.qml            ← 视频+云台控制
-│   │   ├── LaserPanel.qml             ← 双目/点云
+│   │   ├── LaserPanel.qml             ← 深度/点云
 │   │   ├── VehicleControlPanel.qml    ← 摇杆/速度/灯光
 │   │   ├── VehicleInfoPanel.qml       ← 姿态/电量/信号
 │   │   ├── OsdPanel.qml               ← 字幕叠加配置
