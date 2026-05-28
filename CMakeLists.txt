@@ -27,7 +27,6 @@ set(COMM_SOURCES
 
 set(SERVICE_SOURCES
     src/services/camera_service.h           src/services/camera_service.cpp
-    src/services/laser_service.h            src/services/laser_service.cpp
     src/services/depth_camera_service.h     src/services/depth_camera_service.cpp
     src/services/vehicle_service.h          src/services/vehicle_service.cpp
     src/services/osd_service.h              src/services/osd_service.cpp
@@ -39,7 +38,6 @@ set(SERVICE_SOURCES
 # ViewModels are QML-exposed types; declared as QML_ELEMENT in headers.
 set(VIEWMODEL_SOURCES
     src/viewmodels/camera_viewmodel.h           src/viewmodels/camera_viewmodel.cpp
-    src/viewmodels/laser_viewmodel.h            src/viewmodels/laser_viewmodel.cpp
     src/viewmodels/depth_camera_viewmodel.h     src/viewmodels/depth_camera_viewmodel.cpp
     src/viewmodels/vehicle_viewmodel.h          src/viewmodels/vehicle_viewmodel.cpp
     src/viewmodels/osd_viewmodel.h              src/viewmodels/osd_viewmodel.cpp

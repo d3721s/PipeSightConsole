@@ -11,10 +11,10 @@ ApplicationWindow {
 
     width: 1280
     height: 800
-    minimumWidth: isAndroid ? 1280 : 1024
-    minimumHeight: isAndroid ? 800 : 640
-    maximumWidth: isAndroid ? 1280 : 1920
-    maximumHeight: isAndroid ? 800 : 1080
+    minimumWidth: 1280
+    minimumHeight: 800
+    maximumWidth: 1280
+    maximumHeight: 800
     visible: true
     title: qsTr("PipeSight Console")
 

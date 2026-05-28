@@ -146,7 +146,7 @@ Item {
                         Layout.preferredWidth: panel.compactFieldWidth
                         Layout.preferredHeight: panel.fieldHeight
                     }
-                    Label { text: qsTr("录像编码") }
+                    Label { text: qsTr("编码格式") }
                     ComboBox {
                         id: recordingCodecBox
                         Layout.preferredWidth: panel.compactFieldWidth
@@ -157,14 +157,14 @@ Item {
                     Label { text: qsTr("录像模式") }
                     ComboBox {
                         id: recordingModeBox
-                        Layout.preferredWidth: panel.compactFieldWidth
+                        Layout.preferredWidth: 132
                         Layout.preferredHeight: panel.fieldHeight
                         model: panel.recordingModeOptions
                         currentIndex: ConfigViewModel.recordingMode
                     }
                     Label { text: qsTr("存储路径") }
                     Rectangle {
-                        Layout.fillWidth: true
+                        Layout.preferredWidth: 420
                         Layout.preferredHeight: panel.fieldHeight
                         color: "transparent"
                         border.color: "#5b5b64"
@@ -179,6 +179,7 @@ Item {
                             text: panel.storagePathDraft
                         }
                     }
+                    Item { Layout.fillWidth: true }
                     Button {
                         text: qsTr("选择")
                         Layout.preferredWidth: panel.buttonWidth

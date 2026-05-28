@@ -119,13 +119,13 @@ GroupBox {
                 from: 12
                 to: 96
                 value: 24
-                Layout.preferredWidth: 96
+                Layout.preferredWidth: 118
                 Layout.preferredHeight: osdPanel.fieldHeight
             }
             Label { text: qsTr("位置") }
             ComboBox {
                 id: positionBox
-                Layout.preferredWidth: 110
+                Layout.preferredWidth: 96
                 Layout.preferredHeight: osdPanel.fieldHeight
                 model: osdPanel.positionOptions
             }
@@ -137,7 +137,7 @@ GroupBox {
                 stepSize: 250
                 value: 1000
                 editable: true
-                Layout.preferredWidth: 126
+                Layout.preferredWidth: 156
                 Layout.preferredHeight: osdPanel.fieldHeight
             }
             Item { Layout.fillWidth: true }
