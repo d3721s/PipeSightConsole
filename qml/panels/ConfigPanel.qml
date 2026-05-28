@@ -11,6 +11,8 @@ Item {
     readonly property int cameraFieldWidth: 150
     readonly property int compactFieldWidth: 110
     readonly property int buttonWidth: 86
+    readonly property var recordingCodecOptions: ["H.264", "H.265", "MJPEG"]
+    readonly property var recordingModeOptions: [qsTr("性能优先"), qsTr("质量优先")]
     property string storagePathDraft: ConfigViewModel.storagePath
 
     function localPathFromUrl(url) {
@@ -68,8 +70,9 @@ Item {
     function applyRecordingConfig() {
         const ok = ConfigViewModel.applyRecordingConfig(
             segmentMinutesBox.value,
-            cyclicRecordSwitch.checked,
-            panel.storagePathDraft)
+            panel.storagePathDraft,
+            recordingCodecBox.currentIndex,
+            recordingModeBox.currentIndex)
         if (ok)
             panel.storagePathDraft = ConfigViewModel.storagePath
         panel.notifyResult(ok, qsTr("录像配置应用完成"), qsTr("录像配置应用失败：存储路径不可用"))
@@ -143,10 +146,21 @@ Item {
                         Layout.preferredWidth: panel.compactFieldWidth
                         Layout.preferredHeight: panel.fieldHeight
                     }
-                    CheckBox {
-                        id: cyclicRecordSwitch
-                        text: qsTr("循环录像")
-                        checked: ConfigViewModel.cyclicRecord
+                    Label { text: qsTr("录像编码") }
+                    ComboBox {
+                        id: recordingCodecBox
+                        Layout.preferredWidth: panel.compactFieldWidth
+                        Layout.preferredHeight: panel.fieldHeight
+                        model: panel.recordingCodecOptions
+                        currentIndex: ConfigViewModel.recordingCodec
+                    }
+                    Label { text: qsTr("录像模式") }
+                    ComboBox {
+                        id: recordingModeBox
+                        Layout.preferredWidth: panel.compactFieldWidth
+                        Layout.preferredHeight: panel.fieldHeight
+                        model: panel.recordingModeOptions
+                        currentIndex: ConfigViewModel.recordingMode
                     }
                     Label { text: qsTr("存储路径") }
                     Rectangle {
@@ -183,7 +197,7 @@ Item {
 
             OsdPanel {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 152
+                Layout.preferredHeight: 208
             }
 
             // ---- Stereo ----

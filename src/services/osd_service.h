@@ -25,6 +25,10 @@ public:
     bool    showPosition()    const { return showPosition_; }
     QString projectName()     const { return projectName_; }
     QString inspectionUnit()  const { return inspectionUnit_; }
+    QString fontFamily()      const { return fontFamily_; }
+    int     fontSize()        const { return fontSize_; }
+    int     position()        const { return position_; }
+    int     refreshMs()       const { return refreshMs_; }
 
 public slots:
     void setShowProjectInfo(bool on);
@@ -32,6 +36,10 @@ public slots:
     void setShowPosition(bool on);
     void setProjectName(const QString &name);
     void setInspectionUnit(const QString &unit);
+    void setFontFamily(const QString &family);
+    void setFontSize(int size);
+    void setPosition(int position);
+    void setRefreshMs(int ms);
 
 signals:
     void osdChanged();
@@ -47,6 +55,10 @@ private:
     bool    showPosition_  = true;
     QString projectName_;
     QString inspectionUnit_;
+    QString fontFamily_;
+    int     fontSize_      = 24;
+    int     position_      = 0;
+    int     refreshMs_     = 1000;
 };
 
 } // namespace pipesight::services

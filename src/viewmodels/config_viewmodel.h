@@ -23,22 +23,28 @@ class ConfigViewModel : public QObject
     QML_SINGLETON
 
     Q_PROPERTY(int     segmentMinutes READ segmentMinutes WRITE setSegmentMinutes NOTIFY configChanged)
-    Q_PROPERTY(bool    cyclicRecord   READ cyclicRecord   WRITE setCyclicRecord   NOTIFY configChanged)
     Q_PROPERTY(QString storagePath    READ storagePath    WRITE setStoragePath    NOTIFY configChanged)
+    Q_PROPERTY(int     recordingCodec READ recordingCodec WRITE setRecordingCodec NOTIFY configChanged)
+    Q_PROPERTY(int     recordingMode  READ recordingMode  WRITE setRecordingMode  NOTIFY configChanged)
 
 public:
     explicit ConfigViewModel(QObject *parent = nullptr);
     ~ConfigViewModel() override;
 
     int     segmentMinutes() const { return recording_.segmentMinutes(); }
-    bool    cyclicRecord()   const { return recording_.cyclicEnabled(); }
     QString storagePath()    const { return recording_.storagePath(); }
+    int     recordingCodec() const { return static_cast<int>(recording_.codec()); }
+    int     recordingMode()  const { return static_cast<int>(recording_.encodingMode()); }
 
     void setSegmentMinutes(int m);
-    void setCyclicRecord(bool on);
     void setStoragePath(const QString &p);
+    void setRecordingCodec(int codec);
+    void setRecordingMode(int mode);
 
-    Q_INVOKABLE bool applyRecordingConfig(int segmentMinutes, bool cyclicRecord, const QString &storagePath);
+    Q_INVOKABLE bool applyRecordingConfig(int segmentMinutes,
+                                          const QString &storagePath,
+                                          int recordingCodec,
+                                          int recordingMode);
     Q_INVOKABLE void configureCamera(int channel, const QString &ip,
                                      const QString &main,
                                      const QString &sub,

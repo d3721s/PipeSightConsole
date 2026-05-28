@@ -9,6 +9,7 @@
 #include <QFileInfo>
 #include <QIODevice>
 #include <QPainter>
+#include <QPoint>
 #include <QSaveFile>
 #include <QStandardPaths>
 #include <QStringList>
@@ -25,11 +26,68 @@ QString ffmpegFilterPath(QString path)
     return path;
 }
 
-QString osdFontPath()
+QString osdFontPath(QString family)
 {
-    const QString yahei = QStringLiteral("C:/Windows/Fonts/msyh.ttc");
-    if (QFileInfo::exists(yahei)) return yahei;
-    return QStringLiteral("C:/Windows/Fonts/arial.ttf");
+    family = family.trimmed().toLower();
+
+    QStringList candidates;
+    if (family == QStringLiteral("simsun")) {
+        candidates << QStringLiteral("C:/Windows/Fonts/simsun.ttc");
+    } else if (family == QStringLiteral("arial")) {
+        candidates << QStringLiteral("C:/Windows/Fonts/arial.ttf");
+    } else if (family == QStringLiteral("consolas")) {
+        candidates << QStringLiteral("C:/Windows/Fonts/consola.ttf");
+    } else {
+        candidates << QStringLiteral("C:/Windows/Fonts/msyh.ttc");
+    }
+
+    candidates << QStringLiteral("C:/Windows/Fonts/msyh.ttc")
+               << QStringLiteral("C:/Windows/Fonts/arial.ttf");
+
+    for (const QString &path : candidates) {
+        if (QFileInfo::exists(path))
+            return path;
+    }
+    return candidates.constLast();
+}
+
+QPoint osdTextTopLeft(int position, const QSize &imageSize, const QSize &textSize,
+                      int margin, int padding)
+{
+    const int inset = margin + padding;
+    int x = inset;
+    int y = inset;
+
+    switch (position) {
+    case 1:
+        x = imageSize.width() - inset - textSize.width();
+        break;
+    case 2:
+        y = imageSize.height() - inset - textSize.height();
+        break;
+    case 3:
+        x = imageSize.width() - inset - textSize.width();
+        y = imageSize.height() - inset - textSize.height();
+        break;
+    default:
+        break;
+    }
+
+    return QPoint(qMax(inset, x), qMax(inset, y));
+}
+
+QString drawTextPosition(int position)
+{
+    switch (position) {
+    case 1:
+        return QStringLiteral("x=w-tw-20:y=20");
+    case 2:
+        return QStringLiteral("x=20:y=h-th-20");
+    case 3:
+        return QStringLiteral("x=w-tw-20:y=h-th-20");
+    default:
+        return QStringLiteral("x=20:y=20");
+    }
 }
 
 QDateTime resolvedTimestamp(const QDateTime &timestamp)
@@ -83,18 +141,20 @@ QImage OsdRenderer::renderImage(const QImage &source,
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::TextAntialiasing);
 
-    QFont font(QStringLiteral("Microsoft YaHei"));
-    font.setPixelSize(24);
+    QFont font(osd_.fontFamily());
+    font.setPixelSize(osd_.fontSize());
     painter.setFont(font);
 
     constexpr int margin = 20;
     constexpr int padding = 8;
-    const QRect available(margin + padding,
-                          margin + padding,
+    const QRect available(0,
+                          0,
                           qMax(0, image.width() - (margin + padding) * 2),
                           qMax(0, image.height() - (margin + padding) * 2));
     const int flags = Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap;
-    const QRect textRect = QFontMetrics(font).boundingRect(available, flags, text);
+    QRect textRect(QPoint(0, 0), QFontMetrics(font).boundingRect(available, flags, text).size());
+    textRect.moveTopLeft(osdTextTopLeft(osd_.position(), image.size(), textRect.size(),
+                                        margin, padding));
     const QRect boxRect = textRect.adjusted(-padding, -padding, padding, padding);
 
     painter.fillRect(boxRect, QColor(0, 0, 0, 90));
@@ -157,11 +217,17 @@ QString OsdRenderer::drawTextFilter(const QString &textFilePath) const
     if (textFilePath.isEmpty())
         return {};
 
+    const int reloadFrames = qMax(1, (osd_.refreshMs() + 20) / 40);
+
     return QStringLiteral(
-        "drawtext=fontfile='%1':textfile='%2':reload=25:"
-        "x=20:y=20:fontsize=24:fontcolor=white:borderw=2:bordercolor=black:"
+        "drawtext=fontfile='%1':textfile='%2':reload=%3:"
+        "%4:fontsize=%5:fontcolor=white:borderw=2:bordercolor=black:"
         "box=1:boxcolor=black@0.35:boxborderw=8")
-        .arg(ffmpegFilterPath(osdFontPath()), ffmpegFilterPath(textFilePath));
+        .arg(ffmpegFilterPath(osdFontPath(osd_.fontFamily())),
+             ffmpegFilterPath(textFilePath))
+        .arg(reloadFrames)
+        .arg(drawTextPosition(osd_.position()))
+        .arg(osd_.fontSize());
 }
 
 QString OsdRenderer::buildTextFilePath(const QString &prefix)

@@ -37,13 +37,6 @@ void ConfigViewModel::setSegmentMinutes(int m)
     emit configChanged();
 }
 
-void ConfigViewModel::setCyclicRecord(bool on)
-{
-    if (recording_.cyclicEnabled() == on) return;
-    recording_.setCyclicEnabled(on);
-    emit configChanged();
-}
-
 void ConfigViewModel::setStoragePath(const QString &p)
 {
     if (recording_.storagePath() == p) return;
@@ -51,7 +44,26 @@ void ConfigViewModel::setStoragePath(const QString &p)
     emit configChanged();
 }
 
-bool ConfigViewModel::applyRecordingConfig(int segmentMinutes, bool cyclicRecord, const QString &storagePath)
+void ConfigViewModel::setRecordingCodec(int codec)
+{
+    codec = qBound(0, codec, 2);
+    if (recordingCodec() == codec) return;
+    recording_.setCodec(static_cast<services::RecordingService::Codec>(codec));
+    emit configChanged();
+}
+
+void ConfigViewModel::setRecordingMode(int mode)
+{
+    mode = qBound(0, mode, 1);
+    if (recordingMode() == mode) return;
+    recording_.setEncodingMode(static_cast<services::RecordingService::EncodingMode>(mode));
+    emit configChanged();
+}
+
+bool ConfigViewModel::applyRecordingConfig(int segmentMinutes,
+                                           const QString &storagePath,
+                                           int recordingCodec,
+                                           int recordingMode)
 {
     const QString path = storagePath.trimmed();
     if (path.isEmpty())
@@ -60,8 +72,9 @@ bool ConfigViewModel::applyRecordingConfig(int segmentMinutes, bool cyclicRecord
         return false;
 
     setSegmentMinutes(segmentMinutes);
-    setCyclicRecord(cyclicRecord);
     setStoragePath(path);
+    setRecordingCodec(recordingCodec);
+    setRecordingMode(recordingMode);
     return true;
 }
 

@@ -25,6 +25,8 @@ class RecordingService : public QObject
 public:
     enum class Codec { H264, H265, MJPEG };
     Q_ENUM(Codec)
+    enum class EncodingMode { Performance, Quality };
+    Q_ENUM(EncodingMode)
 
     explicit RecordingService(QObject *parent = nullptr);
     ~RecordingService() override;
@@ -32,7 +34,8 @@ public:
     bool    isRecording()        const { return recording_; }
     QString storagePath()        const { return storagePath_; }
     int     segmentMinutes()     const { return segmentMinutes_; }
-    bool    cyclicEnabled()      const { return cyclic_; }
+    Codec   codec()              const { return codec_; }
+    EncodingMode encodingMode()   const { return encodingMode_; }
 
 public slots:
     void startRecording();
@@ -43,9 +46,9 @@ public slots:
 
     void setResolution(int width, int height);
     void setCodec(Codec c);
+    void setEncodingMode(EncodingMode mode);
     void setSegmentMinutes(int minutes);
     void setStoragePath(const QString &path);
-    void setCyclicEnabled(bool on);
 
 signals:
     void recordingStateChanged(bool on);
@@ -66,10 +69,10 @@ private:
     QString outputFile_;
     QString osdTextFile_;
     int     segmentMinutes_  = 30;
-    bool    cyclic_          = true;
     int     width_  = 1920;
     int     height_ = 1080;
     Codec   codec_  = Codec::H264;
+    EncodingMode encodingMode_ = EncodingMode::Quality;
 
     QProcess      *ffmpeg_ = nullptr;
     QTimer         osdTimer_;

@@ -1,5 +1,6 @@
 #include "recording_service.h"
 #include "data/app_settings.h"
+#include "services/osd_service.h"
 
 #include <QDateTime>
 #include <QDir>
@@ -20,7 +21,8 @@ namespace {
 
 constexpr auto kSegmentMinutes = "recording/segmentMinutes";
 constexpr auto kStoragePath = "recording/storagePath";
-constexpr auto kCyclicEnabled = "recording/cyclicEnabled";
+constexpr auto kCodec = "recording/codec";
+constexpr auto kEncodingMode = "recording/encodingMode";
 
 } // namespace
 
@@ -31,9 +33,14 @@ RecordingService::RecordingService(QObject *parent)
 {
     loadSettings();
 
-    osdTimer_.setInterval(1000);
+    osdTimer_.setInterval(OsdService::instance().refreshMs());
     connect(&osdTimer_, &QTimer::timeout, this, [this]() {
         updateRecordingOsdText();
+    });
+    connect(&OsdService::instance(), &OsdService::osdChanged, this, [this]() {
+        osdTimer_.setInterval(OsdService::instance().refreshMs());
+        if (recording_)
+            updateRecordingOsdText();
     });
 
     connect(&AppSettings::instance(), &AppSettings::valueChanged,
@@ -161,7 +168,7 @@ void RecordingService::takeSnapshot(const QUrl &sourceUrl)
     auto *sink = new QVideoSink(player);
     auto *timeout = new QTimer(player);
     timeout->setSingleShot(true);
-    timeout->setInterval(10000);
+    timeout->setInterval(4000);
 
     const auto finished = QSharedPointer<bool>::create(false);
     auto finish = [player, timeout, finished]() {
@@ -212,7 +219,7 @@ void RecordingService::takeSnapshot(const QUrl &sourceUrl)
                     return;
                 }
 
-                if (!image.save(filePath, "JPEG", 95)) {
+                if (!image.save(filePath, "PNG")) {
                     emit errorOccurred(QStringLiteral("拍照保存失败：%1").arg(filePath));
                     return;
                 }
@@ -234,7 +241,16 @@ void RecordingService::setResolution(int w, int h)
 
 void RecordingService::setCodec(Codec c)
 {
+    if (codec_ == c) return;
     codec_ = c;
+    AppSettings::instance().setValue(QString::fromLatin1(kCodec), static_cast<int>(c));
+}
+
+void RecordingService::setEncodingMode(EncodingMode mode)
+{
+    if (encodingMode_ == mode) return;
+    encodingMode_ = mode;
+    AppSettings::instance().setValue(QString::fromLatin1(kEncodingMode), static_cast<int>(mode));
 }
 
 void RecordingService::setSegmentMinutes(int m)
@@ -252,19 +268,13 @@ void RecordingService::setStoragePath(const QString &p)
     AppSettings::instance().setValue(QString::fromLatin1(kStoragePath), p);
 }
 
-void RecordingService::setCyclicEnabled(bool on)
-{
-    if (cyclic_ == on) return;
-    cyclic_ = on;
-    AppSettings::instance().setValue(QString::fromLatin1(kCyclicEnabled), on);
-}
-
 void RecordingService::loadSettings()
 {
     auto &s = AppSettings::instance();
     segmentMinutes_ = s.value(QString::fromLatin1(kSegmentMinutes), segmentMinutes_).toInt();
-    cyclic_ = s.value(QString::fromLatin1(kCyclicEnabled), cyclic_).toBool();
     storagePath_ = s.value(QString::fromLatin1(kStoragePath), storagePath_).toString();
+    codec_ = static_cast<Codec>(qBound(0, s.value(QString::fromLatin1(kCodec), static_cast<int>(codec_)).toInt(), 2));
+    encodingMode_ = static_cast<EncodingMode>(qBound(0, s.value(QString::fromLatin1(kEncodingMode), static_cast<int>(encodingMode_)).toInt(), 1));
     if (storagePath_.isEmpty())
         storagePath_ = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
 }
@@ -290,14 +300,16 @@ OsdTelemetry RecordingService::currentOsdTelemetry() const
 
 QString RecordingService::buildOutputFilePath() const
 {
-    const QString name = QStringLiteral("PipeSight_%1.mp4")
-                             .arg(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMdd_HHmmss")));
+    const QString extension = codec_ == Codec::MJPEG ? QStringLiteral("avi") : QStringLiteral("mp4");
+    const QString name = QStringLiteral("PipeSight_%1.%2")
+                             .arg(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMdd_HHmmss")),
+                                  extension);
     return QDir(storagePath_).filePath(name);
 }
 
 QString RecordingService::buildSnapshotFilePath() const
 {
-    const QString name = QStringLiteral("PipeSight_snapshot_%1.jpg")
+    const QString name = QStringLiteral("PipeSight_snapshot_%1.png")
                              .arg(QDateTime::currentDateTime().toString(
                                  QStringLiteral("yyyyMMdd_HHmmss_zzz")));
     return QDir(storagePath_).filePath(name);
@@ -314,15 +326,37 @@ QStringList RecordingService::buildFfmpegArguments(const QUrl &sourceUrl, const 
          << QStringLiteral("-i") << sourceUrl.toString();
     if (!drawText.isEmpty())
         args << QStringLiteral("-vf") << drawText;
-    args
-         << QStringLiteral("-c:v") << QStringLiteral("libx264")
-         << QStringLiteral("-preset") << QStringLiteral("veryfast")
-         << QStringLiteral("-crf") << QStringLiteral("23")
-         << QStringLiteral("-pix_fmt") << QStringLiteral("yuv420p")
-         << QStringLiteral("-c:a") << QStringLiteral("aac")
-         << QStringLiteral("-b:a") << QStringLiteral("128k")
-         << QStringLiteral("-movflags") << QStringLiteral("+faststart")
-         << outputFile;
+
+    const bool quality = encodingMode_ == EncodingMode::Quality;
+    switch (codec_) {
+    case Codec::H265:
+        args << QStringLiteral("-c:v") << QStringLiteral("libx265")
+             << QStringLiteral("-preset") << (quality ? QStringLiteral("slow") : QStringLiteral("veryfast"))
+             << QStringLiteral("-crf") << (quality ? QStringLiteral("20") : QStringLiteral("28"))
+             << QStringLiteral("-pix_fmt") << QStringLiteral("yuv420p")
+             << QStringLiteral("-tag:v") << QStringLiteral("hvc1")
+             << QStringLiteral("-c:a") << QStringLiteral("aac")
+             << QStringLiteral("-b:a") << (quality ? QStringLiteral("320k") : QStringLiteral("128k"))
+             << QStringLiteral("-movflags") << QStringLiteral("+faststart");
+        break;
+    case Codec::MJPEG:
+        args << QStringLiteral("-c:v") << QStringLiteral("mjpeg")
+             << QStringLiteral("-q:v") << (quality ? QStringLiteral("2") : QStringLiteral("5"))
+             << QStringLiteral("-pix_fmt") << QStringLiteral("yuvj420p")
+             << QStringLiteral("-c:a") << QStringLiteral("pcm_s16le");
+        break;
+    case Codec::H264:
+        args << QStringLiteral("-c:v") << QStringLiteral("libx264")
+             << QStringLiteral("-preset") << (quality ? QStringLiteral("slow") : QStringLiteral("veryfast"))
+             << QStringLiteral("-crf") << (quality ? QStringLiteral("16") : QStringLiteral("23"))
+             << QStringLiteral("-profile:v") << (quality ? QStringLiteral("high") : QStringLiteral("main"))
+             << QStringLiteral("-pix_fmt") << QStringLiteral("yuv420p")
+             << QStringLiteral("-c:a") << QStringLiteral("aac")
+             << QStringLiteral("-b:a") << (quality ? QStringLiteral("320k") : QStringLiteral("128k"))
+             << QStringLiteral("-movflags") << QStringLiteral("+faststart");
+        break;
+    }
+    args << outputFile;
     return args;
 }
 
