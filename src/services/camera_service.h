@@ -18,7 +18,6 @@ struct CameraConfig
     QString username;
     QString password;
     QString ip;
-    quint16 onvifPort = 80;
     int     channel   = 1;   // 1-based RTSP channel index
     int     subtype   = 0;   // 0 = main stream, 1 = sub stream 1, 2 = sub stream 2
 

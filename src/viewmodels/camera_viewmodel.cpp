@@ -63,7 +63,6 @@ bool CameraViewModel::configureCamera(int channel,
                                       const QString &username,
                                       const QString &password,
                                       const QString &ip,
-                                      int onvifPort,
                                       int rtspChannel,
                                       int subtype,
                                       const QString &mainResolution,
@@ -82,7 +81,6 @@ bool CameraViewModel::configureCamera(int channel,
     cfg.username       = username;
     cfg.password       = password;
     cfg.ip             = ip;
-    cfg.onvifPort      = static_cast<quint16>(onvifPort);
     cfg.channel        = rtspChannel;
     cfg.subtype        = subtype;
     cfg.mainResolution = mainResolution;
@@ -104,7 +102,6 @@ QVariantMap CameraViewModel::cameraConfig(int channel) const
     m.insert(QStringLiteral("username"),       cfg.username);
     m.insert(QStringLiteral("password"),       cfg.password);
     m.insert(QStringLiteral("ip"),             cfg.ip);
-    m.insert(QStringLiteral("onvifPort"),      cfg.onvifPort);
     m.insert(QStringLiteral("channel"),        cfg.channel);
     m.insert(QStringLiteral("subtype"),        cfg.subtype);
     m.insert(QStringLiteral("mainResolution"), cfg.mainResolution);

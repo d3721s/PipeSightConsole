@@ -120,7 +120,6 @@ CameraConfig CameraService::loadConfig(Channel ch) const
     cfg.username       = s.value(p + QStringLiteral("username")).toString();
     cfg.password       = s.value(p + QStringLiteral("password")).toString();
     cfg.ip             = s.value(p + QStringLiteral("ip")).toString();
-    cfg.onvifPort      = static_cast<quint16>(s.value(p + QStringLiteral("onvifPort"), 80).toUInt());
     cfg.channel        = s.value(p + QStringLiteral("channel"), 1).toInt();
     cfg.subtype        = s.value(p + QStringLiteral("subtype"), 0).toInt();
     if (cfg.subtype < 0 || cfg.subtype > 2) cfg.subtype = 0;
@@ -144,7 +143,6 @@ void CameraService::saveConfig(Channel ch, const CameraConfig &cfg) const
     s.setValue(p + QStringLiteral("username"),       cfg.username);
     s.setValue(p + QStringLiteral("password"),       cfg.password);
     s.setValue(p + QStringLiteral("ip"),             cfg.ip);
-    s.setValue(p + QStringLiteral("onvifPort"),      cfg.onvifPort);
     s.setValue(p + QStringLiteral("channel"),        cfg.channel);
     s.setValue(p + QStringLiteral("subtype"),        cfg.subtype);
     s.setValue(p + QStringLiteral("mainResolution"), cfg.mainResolution);

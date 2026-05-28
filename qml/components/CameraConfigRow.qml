@@ -39,7 +39,6 @@ GroupBox {
         userField.text       = cfg.username || ""
         passwordField.text   = cfg.password || ""
         ipField.text         = cfg.ip || ""
-        onvifPortField.text  = String(cfg.onvifPort || 80)
         chField.value        = cfg.channel || 1
         subBox.currentIndex  = validSubtype(cfg.subtype || 0)
         sub1EnabledBox.checked = cfg.sub1Enabled === undefined ? true : cfg.sub1Enabled
@@ -75,7 +74,6 @@ GroupBox {
             userField.text,
             passwordField.text,
             ipField.text,
-            parseInt(onvifPortField.text) || 80,
             chField.value,
             subBox.currentIndex,
             mainResBox.currentText,
@@ -96,7 +94,7 @@ GroupBox {
         width: parent.width
         spacing: 8
 
-        // Row 1: 用户名 / 密码 / IP / ONVIF端口
+        // Row 1: 用户名 / 密码 / IP
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
@@ -122,15 +120,6 @@ GroupBox {
                 Layout.preferredWidth: root.compactFieldWidth + 60
                 Layout.preferredHeight: root.fieldHeight
                 placeholderText: "ip"
-            }
-            Label { text: qsTr("ONVIF端口") }
-            TextField {
-                id: onvifPortField
-                Layout.preferredWidth: root.compactFieldWidth
-                Layout.preferredHeight: root.fieldHeight
-                text: "80"
-                inputMethodHints: Qt.ImhDigitsOnly
-                validator: IntValidator { bottom: 1; top: 65535 }
             }
             Item { Layout.fillWidth: true }
         }
