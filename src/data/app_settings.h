@@ -9,8 +9,8 @@ namespace pipesight::data {
 /**
  * Thin wrapper around QSettings for typed access + change notifications.
  *
- * Stores: per-camera IP/streams, last storage path, OSD prefs, last-used
- * stereo/radar params. Heavy/structured data goes to Database, not here.
+ * Stores: per-camera IP/streams, vehicle IP, last storage path, OSD prefs,
+ * last-used stereo/radar params. Heavy/structured data goes to Database, not here.
  */
 class AppSettings : public QObject
 {

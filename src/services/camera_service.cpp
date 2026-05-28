@@ -96,7 +96,6 @@ QUrl CameraService::buildUrl(const CameraConfig &cfg)
             url.setPassword(cfg.password);
     }
     url.setHost(cfg.ip);
-    url.setPort(cfg.rtspPort);
     url.setPath(QStringLiteral("/cam/realmonitor"));
 
     QUrlQuery q;
@@ -121,7 +120,6 @@ CameraConfig CameraService::loadConfig(Channel ch) const
     cfg.username       = s.value(p + QStringLiteral("username")).toString();
     cfg.password       = s.value(p + QStringLiteral("password")).toString();
     cfg.ip             = s.value(p + QStringLiteral("ip")).toString();
-    cfg.rtspPort       = static_cast<quint16>(s.value(p + QStringLiteral("rtspPort"), 554).toUInt());
     cfg.onvifPort      = static_cast<quint16>(s.value(p + QStringLiteral("onvifPort"), 80).toUInt());
     cfg.channel        = s.value(p + QStringLiteral("channel"), 1).toInt();
     cfg.subtype        = s.value(p + QStringLiteral("subtype"), 0).toInt();
@@ -146,7 +144,6 @@ void CameraService::saveConfig(Channel ch, const CameraConfig &cfg) const
     s.setValue(p + QStringLiteral("username"),       cfg.username);
     s.setValue(p + QStringLiteral("password"),       cfg.password);
     s.setValue(p + QStringLiteral("ip"),             cfg.ip);
-    s.setValue(p + QStringLiteral("rtspPort"),       cfg.rtspPort);
     s.setValue(p + QStringLiteral("onvifPort"),      cfg.onvifPort);
     s.setValue(p + QStringLiteral("channel"),        cfg.channel);
     s.setValue(p + QStringLiteral("subtype"),        cfg.subtype);

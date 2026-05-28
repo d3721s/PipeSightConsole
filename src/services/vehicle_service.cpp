@@ -1,10 +1,18 @@
 #include "vehicle_service.h"
 #include "comm/connection_manager.h"
 #include "comm/tcp_client.h"
+#include "data/app_settings.h"
 
 #include <QDataStream>
 
 namespace pipesight::services {
+
+using pipesight::data::AppSettings;
+
+namespace {
+constexpr auto kVehicleIp = "vehicle/ip";
+constexpr auto kVehicleInfoRefreshMs = "vehicle/infoRefreshMs";
+} // namespace
 
 VehicleService &VehicleService::instance()
 {
@@ -15,12 +23,35 @@ VehicleService &VehicleService::instance()
 VehicleService::VehicleService(QObject *parent)
     : QObject(parent)
     , client_(comm::ConnectionManager::instance().acquire(QStringLiteral("vehicle")))
+    , ip_(AppSettings::instance().value(QString::fromLatin1(kVehicleIp)).toString())
+    , infoRefreshMs_(AppSettings::instance().value(QString::fromLatin1(kVehicleInfoRefreshMs), 1000).toInt())
 {
     connect(client_, &comm::TcpClient::frameReceived,
             this, &VehicleService::onFrameReceived);
 }
 
 VehicleService::~VehicleService() = default;
+
+void VehicleService::setIp(const QString &ip)
+{
+    const QString trimmed = ip.trimmed();
+    if (ip_ == trimmed) return;
+
+    ip_ = trimmed;
+    AppSettings::instance().setValue(QString::fromLatin1(kVehicleIp), ip_);
+
+    emit configChanged();
+}
+
+void VehicleService::setInfoRefreshMs(int ms)
+{
+    const int value = qBound(250, ms, 10000);
+    if (infoRefreshMs_ == value) return;
+
+    infoRefreshMs_ = value;
+    AppSettings::instance().setValue(QString::fromLatin1(kVehicleInfoRefreshMs), value);
+    emit configChanged();
+}
 
 void VehicleService::drive(qreal throttle, qreal steer)
 {

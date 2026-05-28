@@ -11,14 +11,13 @@ namespace pipesight::services {
 
 /**
  * Per-camera RTSP credentials + stream selector. Fields map 1:1 to the URL
- * shape `rtsp://{username}:{password}@{ip}:{port}/cam/realmonitor?channel={channel}&subtype={subtype}`.
+ * shape `rtsp://{username}:{password}@{ip}/cam/realmonitor?channel={channel}&subtype={subtype}`.
  */
 struct CameraConfig
 {
     QString username;
     QString password;
     QString ip;
-    quint16 rtspPort  = 554;
     quint16 onvifPort = 80;
     int     channel   = 1;   // 1-based RTSP channel index
     int     subtype   = 0;   // 0 = main stream, 1 = sub stream 1, 2 = sub stream 2

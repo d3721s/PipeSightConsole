@@ -37,8 +37,13 @@ public:
     ~VehicleService() override;
 
     Telemetry latest() const { return latest_; }
+    QString ip() const { return ip_; }
+    int infoRefreshMs() const { return infoRefreshMs_; }
 
 public slots:
+    void setIp(const QString &ip);
+    void setInfoRefreshMs(int ms);
+
     // Motion: throttle in [-1, 1] (negative = reverse), steer in [-1, 1]
     void drive(qreal throttle, qreal steer);
     void setTargetSpeed(qreal mps);    // for cruise / pre-set gears
@@ -52,6 +57,7 @@ public slots:
     void resetHome();
 
 signals:
+    void configChanged();
     void telemetryUpdated(const Telemetry &t);
     void commandAcknowledged(quint8 type);
     void errorOccurred(const QString &msg);
@@ -65,6 +71,8 @@ private:
 
     pipesight::comm::TcpClient *client_ = nullptr;
     Telemetry                   latest_;
+    QString                     ip_;
+    int                         infoRefreshMs_ = 1000;
 };
 
 } // namespace pipesight::services

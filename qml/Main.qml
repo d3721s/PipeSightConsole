@@ -51,6 +51,13 @@ ApplicationWindow {
     }
 
     Connections {
+        target: ConfigViewModel
+        function onConfigChanged() {
+            VehicleViewModel.refreshMs = ConfigViewModel.vehicleInfoRefreshMs
+        }
+    }
+
+    Connections {
         target: NativeNotifier
         function onNotificationFailed(message) {
             AppNotifier.info(message)

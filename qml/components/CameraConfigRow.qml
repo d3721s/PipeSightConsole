@@ -13,7 +13,7 @@ GroupBox {
 
     readonly property int resolutionFieldWidth: compactFieldWidth + 55
     readonly property int fpsFieldWidth: Math.max(86, compactFieldWidth - 18)
-    readonly property int subCheckWidth: Math.max(98, compactFieldWidth - 12)
+    readonly property int subCheckWidth: Math.max(116, compactFieldWidth)
     readonly property var resolutionOptions: [
         "3840 x 2160", "2560 x 1440", "1920 x 1080", "1280 x 720", "704 x 576", "640 x 480"
     ]
@@ -39,7 +39,6 @@ GroupBox {
         userField.text       = cfg.username || ""
         passwordField.text   = cfg.password || ""
         ipField.text         = cfg.ip || ""
-        rtspPortField.text   = String(cfg.rtspPort  || 554)
         onvifPortField.text  = String(cfg.onvifPort || 80)
         chField.value        = cfg.channel || 1
         subBox.currentIndex  = validSubtype(cfg.subtype || 0)
@@ -56,7 +55,7 @@ GroupBox {
 
     function readConfig() {
         root.reload()
-        AppNotifier.info(qsTr("%1读取完成").arg(root.title))
+        AppNotifier.info(qsTr("%1读取成功").arg(root.title))
     }
 
     Component.onCompleted: reload()
@@ -76,7 +75,6 @@ GroupBox {
             userField.text,
             passwordField.text,
             ipField.text,
-            parseInt(rtspPortField.text)  || 554,
             parseInt(onvifPortField.text) || 80,
             chField.value,
             subBox.currentIndex,
@@ -89,7 +87,7 @@ GroupBox {
             sub2ResBox.currentText,
             parseInt(sub2FpsBox.currentText) || 25)
         if (ok)
-            AppNotifier.info(qsTr("%1应用完成").arg(root.title))
+            AppNotifier.info(qsTr("%1应用成功").arg(root.title))
         else
             AppNotifier.error(qsTr("%1应用失败").arg(root.title))
     }
@@ -98,7 +96,7 @@ GroupBox {
         width: parent.width
         spacing: 8
 
-        // Row 1: 用户名 / 密码 / IP / RTSP端口 / ONVIF端口
+        // Row 1: 用户名 / 密码 / IP / ONVIF端口
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
@@ -124,15 +122,6 @@ GroupBox {
                 Layout.preferredWidth: root.compactFieldWidth + 60
                 Layout.preferredHeight: root.fieldHeight
                 placeholderText: "ip"
-            }
-            Label { text: qsTr("RTSP端口") }
-            TextField {
-                id: rtspPortField
-                Layout.preferredWidth: root.compactFieldWidth
-                Layout.preferredHeight: root.fieldHeight
-                text: "554"
-                inputMethodHints: Qt.ImhDigitsOnly
-                validator: IntValidator { bottom: 1; top: 65535 }
             }
             Label { text: qsTr("ONVIF端口") }
             TextField {
@@ -191,8 +180,8 @@ GroupBox {
 
             CheckBox {
                 id: sub1EnabledBox
-                text: qsTr("辅码流1")
-                Layout.preferredWidth: root.subCheckWidth
+                text: qsTr("辅码流1设置：")
+                Layout.preferredWidth: Math.max(root.subCheckWidth, implicitWidth)
                 Layout.preferredHeight: root.fieldHeight
             }
             Label { text: qsTr("W x H") }
@@ -213,8 +202,8 @@ GroupBox {
             }
             CheckBox {
                 id: sub2EnabledBox
-                text: qsTr("辅码流2")
-                Layout.preferredWidth: root.subCheckWidth
+                text: qsTr("辅码流2设置：")
+                Layout.preferredWidth: Math.max(root.subCheckWidth, implicitWidth)
                 Layout.preferredHeight: root.fieldHeight
             }
             Label { text: qsTr("W x H") }

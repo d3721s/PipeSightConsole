@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
+#include <QTimer>
 #include "services/vehicle_service.h"
 
 namespace pipesight::viewmodels {
@@ -21,6 +22,7 @@ class VehicleViewModel : public QObject
     Q_PROPERTY(int    batteryPct  READ batteryPct  NOTIFY telemetryChanged)
     Q_PROPERTY(double batteryV    READ batteryV    NOTIFY telemetryChanged)
     Q_PROPERTY(int    signalPct   READ signalPct   NOTIFY telemetryChanged)
+    Q_PROPERTY(int    refreshMs   READ refreshMs   WRITE setRefreshMs   NOTIFY refreshMsChanged)
 
     // Light control mirrored in VM so QML sliders bind two-way
     Q_PROPERTY(int frontLight READ frontLight WRITE setFrontLight NOTIFY frontLightChanged)
@@ -38,11 +40,13 @@ public:
     int    batteryPct()  const { return latest_.batteryPct; }
     double batteryV()    const { return latest_.batteryV; }
     int    signalPct()   const { return latest_.signalPct; }
+    int    refreshMs()   const { return refreshTimer_.interval(); }
     int    frontLight()  const { return frontLight_; }
     int    rearLight()   const { return rearLight_; }
 
     void setFrontLight(int v);
     void setRearLight(int v);
+    void setRefreshMs(int ms);
 
     Q_INVOKABLE void drive(qreal throttle, qreal steer)
     {
@@ -54,12 +58,14 @@ public:
 
 signals:
     void telemetryChanged();
+    void refreshMsChanged();
     void frontLightChanged();
     void rearLightChanged();
 
 private:
     services::VehicleService           &service_;
     services::VehicleService::Telemetry latest_;
+    QTimer                               refreshTimer_;
     int                                  frontLight_ = 0;
     int                                  rearLight_  = 0;
 };

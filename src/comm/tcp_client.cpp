@@ -53,6 +53,10 @@ void TcpClient::start(const QString &host, quint16 port)
     port_ = port;
     userRequestedStop_ = false;
     reconnectCurMs_ = reconnectMinMs_;
+    reconnectTimer_->stop();
+    heartbeatTimer_->stop();
+    rxBuffer_.clear();
+    socket_->abort();
     setState(State::Connecting);
     socket_->connectToHost(host, port);
 }

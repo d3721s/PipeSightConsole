@@ -5,7 +5,7 @@ import PipeSightConsole
 
 GroupBox {
     id: osdPanel
-    title: qsTr("OSD 字幕叠加")
+    title: qsTr("OSD 配置")
     bottomPadding: 16
 
     readonly property int fieldHeight: 44
@@ -43,7 +43,7 @@ GroupBox {
         OsdViewModel.refreshMs = refreshMsBox.value
         applying = false
         reload()
-        AppNotifier.info(qsTr("OSD字幕叠加应用完成"))
+        AppNotifier.info(qsTr("OSD配置应用成功"))
     }
 
     Component.onCompleted: reload()
@@ -145,7 +145,7 @@ GroupBox {
                 text: qsTr("应用")
                 Layout.preferredWidth: 86
                 Layout.preferredHeight: osdPanel.fieldHeight
-                onClicked: confirmDialog.confirm(qsTr("确认应用OSD字幕叠加设置？"),
+                onClicked: confirmDialog.confirm(qsTr("确认应用OSD配置？"),
                                                  function() { osdPanel.applyConfig() })
             }
         }

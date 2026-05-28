@@ -27,7 +27,10 @@ QVariant defaultRadarParam(const QString &key)
 
 } // namespace
 
-ConfigViewModel::ConfigViewModel(QObject *parent) : QObject(parent) {}
+ConfigViewModel::ConfigViewModel(QObject *parent)
+    : QObject(parent)
+    , vehicle_(services::VehicleService::instance())
+{}
 ConfigViewModel::~ConfigViewModel() = default;
 
 void ConfigViewModel::setSegmentMinutes(int m)
@@ -57,6 +60,22 @@ void ConfigViewModel::setRecordingMode(int mode)
     mode = qBound(0, mode, 1);
     if (recordingMode() == mode) return;
     recording_.setEncodingMode(static_cast<services::RecordingService::EncodingMode>(mode));
+    emit configChanged();
+}
+
+void ConfigViewModel::setVehicleIp(const QString &ip)
+{
+    const QString trimmed = ip.trimmed();
+    if (vehicle_.ip() == trimmed) return;
+    vehicle_.setIp(trimmed);
+    emit configChanged();
+}
+
+void ConfigViewModel::setVehicleInfoRefreshMs(int ms)
+{
+    const int value = qBound(250, ms, 10000);
+    if (vehicle_.infoRefreshMs() == value) return;
+    vehicle_.setInfoRefreshMs(value);
     emit configChanged();
 }
 
@@ -119,6 +138,17 @@ bool ConfigViewModel::applyStereoParams(int exposure, const QString &whiteBalanc
     Q_UNUSED(whiteBalance);
     Q_UNUSED(sync);
     return false;
+}
+
+bool ConfigViewModel::applyVehicleConfig(const QString &ip, int infoRefreshMs)
+{
+    const QString trimmed = ip.trimmed();
+    if (trimmed.isEmpty())
+        return false;
+
+    setVehicleIp(trimmed);
+    setVehicleInfoRefreshMs(infoRefreshMs);
+    return true;
 }
 
 bool ConfigViewModel::readRadarParams()

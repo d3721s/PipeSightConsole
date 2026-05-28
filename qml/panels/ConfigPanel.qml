@@ -41,12 +41,21 @@ Item {
         const ok = ConfigViewModel.readStereoParams()
         if (ok)
             loadLocalStereoParams()
-        notifyResult(ok, qsTr("深度相机参数读取完成"), qsTr("深度相机参数读取失败：后端未实现"))
+        notifyResult(ok, qsTr("深度相机配置读取成功"), qsTr("深度相机配置读取失败：后端未实现"))
     }
 
     function applyStereoParams() {
         const ok = ConfigViewModel.applyStereoParams(exp.value, wbBox.currentText, syncExposure.checked)
-        notifyResult(ok, qsTr("深度相机参数应用完成"), qsTr("深度相机参数应用失败：后端未实现"))
+        notifyResult(ok, qsTr("深度相机配置应用成功"), qsTr("深度相机配置应用失败：后端未实现"))
+    }
+
+    function applyVehicleConfig() {
+        const ok = ConfigViewModel.applyVehicleConfig(vehicleIpField.text, vehicleInfoRefreshBox.value)
+        if (ok) {
+            vehicleIpField.text = ConfigViewModel.vehicleIp
+            vehicleInfoRefreshBox.value = ConfigViewModel.vehicleInfoRefreshMs
+        }
+        notifyResult(ok, qsTr("移动底盘配置应用成功"), qsTr("移动底盘配置应用失败：IP不能为空"))
     }
 
     function loadLocalRadarParams() {
@@ -59,12 +68,12 @@ Item {
         const ok = ConfigViewModel.readRadarParams()
         if (ok)
             loadLocalRadarParams()
-        notifyResult(ok, qsTr("激光雷达参数读取完成"), qsTr("激光雷达参数读取失败：后端未实现"))
+        notifyResult(ok, qsTr("激光雷达配置读取成功"), qsTr("激光雷达配置读取失败：后端未实现"))
     }
 
     function applyRadarParams() {
         const ok = ConfigViewModel.applyRadarParams(scanHzBox.value, angleDegBox.value, rangeMBox.value)
-        notifyResult(ok, qsTr("激光雷达参数应用完成"), qsTr("激光雷达参数应用失败：后端未实现"))
+        notifyResult(ok, qsTr("激光雷达配置应用成功"), qsTr("激光雷达配置应用失败：后端未实现"))
     }
 
     function applyRecordingConfig() {
@@ -75,7 +84,7 @@ Item {
             recordingModeBox.currentIndex)
         if (ok)
             panel.storagePathDraft = ConfigViewModel.storagePath
-        panel.notifyResult(ok, qsTr("录像配置应用完成"), qsTr("录像配置应用失败：存储路径不可用"))
+        panel.notifyResult(ok, qsTr("录像配置应用成功"), qsTr("录像配置应用失败：存储路径不可用"))
     }
 
     Component.onCompleted: {
@@ -167,7 +176,7 @@ Item {
                         Layout.preferredWidth: 300
                         Layout.preferredHeight: panel.fieldHeight
                         color: "transparent"
-                        border.color: "#5b5b64"
+                        border.color: pathClickArea.containsMouse ? "#6ee7f2" : "#5b5b64"
                         border.width: 1
                         radius: 4
                         Label {
@@ -178,14 +187,15 @@ Item {
                             elide: Text.ElideMiddle
                             text: panel.storagePathDraft
                         }
+                        MouseArea {
+                            id: pathClickArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: storageFolderDialog.open()
+                        }
                     }
                     Item { Layout.fillWidth: true }
-                    Button {
-                        text: qsTr("选择")
-                        Layout.preferredWidth: panel.buttonWidth
-                        Layout.preferredHeight: panel.fieldHeight
-                        onClicked: storageFolderDialog.open()
-                    }
                     Button {
                         text: qsTr("应用")
                         Layout.preferredWidth: panel.buttonWidth
@@ -234,8 +244,46 @@ Item {
                         text: qsTr("应用")
                         Layout.preferredWidth: panel.buttonWidth
                         Layout.preferredHeight: panel.fieldHeight
-                        onClicked: confirmDialog.confirm(qsTr("确认应用深度相机参数？"),
+                        onClicked: confirmDialog.confirm(qsTr("确认应用深度相机配置？"),
                                                          function() { panel.applyStereoParams() })
+                    }
+                }
+            }
+
+            // ---- Vehicle ----
+            GroupBox {
+                title: qsTr("移动底盘配置")
+                Layout.fillWidth: true
+                RowLayout {
+                    width: parent.width
+                    spacing: 10
+
+                    Label { text: qsTr("IP") }
+                    TextField {
+                        id: vehicleIpField
+                        text: ConfigViewModel.vehicleIp
+                        placeholderText: "ip"
+                        Layout.preferredWidth: 170
+                        Layout.preferredHeight: panel.fieldHeight
+                    }
+                    Label { text: qsTr("信息刷新周期(ms)") }
+                    SpinBox {
+                        id: vehicleInfoRefreshBox
+                        from: 250
+                        to: 10000
+                        stepSize: 250
+                        value: ConfigViewModel.vehicleInfoRefreshMs
+                        editable: true
+                        Layout.preferredWidth: 156
+                        Layout.preferredHeight: panel.fieldHeight
+                    }
+                    Item { Layout.fillWidth: true }
+                    Button {
+                        text: qsTr("应用")
+                        Layout.preferredWidth: panel.buttonWidth
+                        Layout.preferredHeight: panel.fieldHeight
+                        onClicked: confirmDialog.confirm(qsTr("确认应用移动底盘配置？"),
+                                                         function() { panel.applyVehicleConfig() })
                     }
                 }
             }
@@ -268,7 +316,7 @@ Item {
                         text: qsTr("应用")
                         Layout.preferredWidth: panel.buttonWidth
                         Layout.preferredHeight: panel.fieldHeight
-                        onClicked: confirmDialog.confirm(qsTr("确认应用激光雷达参数？"),
+                        onClicked: confirmDialog.confirm(qsTr("确认应用激光雷达配置？"),
                                                          function() { panel.applyRadarParams() })
                     }
                 }

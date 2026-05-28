@@ -5,12 +5,13 @@
 #include <QVariant>
 #include <QtQmlIntegration/qqmlintegration.h>
 #include "services/recording_service.h"
+#include "services/vehicle_service.h"
 
 namespace pipesight::viewmodels {
 
 /**
  * ConfigViewModel covers the "配置" panel: camera IPs + 3 streams each,
- * stereo camera params, radar params, recording config.
+ * vehicle IP, stereo camera params, radar params, recording config.
  *
  * It owns RecordingService directly (it's the closest match) and forwards
  * camera/laser-radar config through the respective Services via signals
@@ -26,6 +27,8 @@ class ConfigViewModel : public QObject
     Q_PROPERTY(QString storagePath    READ storagePath    WRITE setStoragePath    NOTIFY configChanged)
     Q_PROPERTY(int     recordingCodec READ recordingCodec WRITE setRecordingCodec NOTIFY configChanged)
     Q_PROPERTY(int     recordingMode  READ recordingMode  WRITE setRecordingMode  NOTIFY configChanged)
+    Q_PROPERTY(QString vehicleIp      READ vehicleIp      WRITE setVehicleIp      NOTIFY configChanged)
+    Q_PROPERTY(int     vehicleInfoRefreshMs READ vehicleInfoRefreshMs WRITE setVehicleInfoRefreshMs NOTIFY configChanged)
 
 public:
     explicit ConfigViewModel(QObject *parent = nullptr);
@@ -35,11 +38,15 @@ public:
     QString storagePath()    const { return recording_.storagePath(); }
     int     recordingCodec() const { return static_cast<int>(recording_.codec()); }
     int     recordingMode()  const { return static_cast<int>(recording_.encodingMode()); }
+    QString vehicleIp()      const { return vehicle_.ip(); }
+    int     vehicleInfoRefreshMs() const { return vehicle_.infoRefreshMs(); }
 
     void setSegmentMinutes(int m);
     void setStoragePath(const QString &p);
     void setRecordingCodec(int codec);
     void setRecordingMode(int mode);
+    void setVehicleIp(const QString &ip);
+    void setVehicleInfoRefreshMs(int ms);
 
     Q_INVOKABLE bool applyRecordingConfig(int segmentMinutes,
                                           const QString &storagePath,
@@ -55,6 +62,7 @@ public:
     Q_INVOKABLE void setRadarParam(const QString &key, const QVariant &v);
     Q_INVOKABLE bool readStereoParams();
     Q_INVOKABLE bool applyStereoParams(int exposure, const QString &whiteBalance, bool sync);
+    Q_INVOKABLE bool applyVehicleConfig(const QString &ip, int infoRefreshMs);
     Q_INVOKABLE bool readRadarParams();
     Q_INVOKABLE bool applyRadarParams(int scanHz, int angleDeg, int rangeM);
 
@@ -66,6 +74,7 @@ signals:
 
 private:
     services::RecordingService recording_;
+    services::VehicleService &vehicle_;
 };
 
 } // namespace pipesight::viewmodels

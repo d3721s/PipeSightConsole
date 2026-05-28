@@ -11,6 +11,14 @@ VehicleViewModel::VehicleViewModel(QObject *parent)
                 latest_ = t;
                 emit telemetryChanged();
             });
+
+    refreshTimer_.setInterval(qMax(250, service_.infoRefreshMs()));
+    refreshTimer_.setSingleShot(false);
+    connect(&refreshTimer_, &QTimer::timeout, this, [this]() {
+        latest_ = service_.latest();
+        emit telemetryChanged();
+    });
+    refreshTimer_.start();
 }
 
 VehicleViewModel::~VehicleViewModel() = default;
@@ -31,6 +39,16 @@ void VehicleViewModel::setRearLight(int v)
     rearLight_ = v;
     service_.setRearLight(v);
     emit rearLightChanged();
+}
+
+void VehicleViewModel::setRefreshMs(int ms)
+{
+    ms = qBound(250, ms, 10000);
+    if (refreshTimer_.interval() == ms) return;
+    refreshTimer_.setInterval(ms);
+    latest_ = service_.latest();
+    emit telemetryChanged();
+    emit refreshMsChanged();
 }
 
 } // namespace pipesight::viewmodels

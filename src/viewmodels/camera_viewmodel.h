@@ -42,7 +42,6 @@ public:
                                      const QString &username,
                                      const QString &password,
                                      const QString &ip,
-                                     int rtspPort,
                                      int onvifPort,
                                      int rtspChannel,
                                      int subtype,
