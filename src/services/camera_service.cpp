@@ -14,6 +14,14 @@ using pipesight::data::AppSettings;
 
 namespace {
 
+constexpr int kDefaultRtspPort = 554;
+
+QString settingsStringOrDefault(AppSettings &settings, const QString &key, const QString &defaultValue)
+{
+    const QString value = settings.value(key, defaultValue).toString();
+    return value.isEmpty() ? defaultValue : value;
+}
+
 QString normalizedResolution(QString value)
 {
     value.replace(QRegularExpression(QStringLiteral("\\s*[xX]\\s*")), QStringLiteral(" x "));
@@ -96,11 +104,14 @@ QUrl CameraService::buildUrl(const CameraConfig &cfg)
             url.setPassword(cfg.password);
     }
     url.setHost(cfg.ip);
+    url.setPort(cfg.rtspPort > 0 ? cfg.rtspPort : kDefaultRtspPort);
     url.setPath(QStringLiteral("/cam/realmonitor"));
 
     QUrlQuery q;
     q.addQueryItem(QStringLiteral("channel"), QString::number(cfg.channel));
     q.addQueryItem(QStringLiteral("subtype"), QString::number(cfg.subtype));
+    q.addQueryItem(QStringLiteral("unicast"), QStringLiteral("false"));
+    q.addQueryItem(QStringLiteral("proto"), QStringLiteral("Onvif"));
     url.setQuery(q);
     return url;
 }
@@ -117,9 +128,12 @@ CameraConfig CameraService::loadConfig(Channel ch) const
     auto &s = AppSettings::instance();
     const QString p = settingsPrefix(ch);
     CameraConfig cfg;
-    cfg.username       = s.value(p + QStringLiteral("username")).toString();
-    cfg.password       = s.value(p + QStringLiteral("password")).toString();
-    cfg.ip             = s.value(p + QStringLiteral("ip")).toString();
+    cfg.username       = settingsStringOrDefault(s, p + QStringLiteral("username"), QStringLiteral("admin"));
+    cfg.password       = settingsStringOrDefault(s, p + QStringLiteral("password"), QStringLiteral("L26FDBCF"));
+    cfg.ip             = settingsStringOrDefault(s, p + QStringLiteral("ip"), QStringLiteral("192.168.71.21"));
+    cfg.rtspPort       = s.value(p + QStringLiteral("rtspPort"),
+                                 s.value(p + QStringLiteral("port"), kDefaultRtspPort)).toInt();
+    if (cfg.rtspPort <= 0) cfg.rtspPort = kDefaultRtspPort;
     cfg.channel        = s.value(p + QStringLiteral("channel"), 1).toInt();
     cfg.subtype        = s.value(p + QStringLiteral("subtype"), 0).toInt();
     if (cfg.subtype < 0 || cfg.subtype > 2) cfg.subtype = 0;
@@ -143,6 +157,8 @@ void CameraService::saveConfig(Channel ch, const CameraConfig &cfg) const
     s.setValue(p + QStringLiteral("username"),       cfg.username);
     s.setValue(p + QStringLiteral("password"),       cfg.password);
     s.setValue(p + QStringLiteral("ip"),             cfg.ip);
+    s.setValue(p + QStringLiteral("rtspPort"),       cfg.rtspPort);
+    s.setValue(p + QStringLiteral("port"),           cfg.rtspPort);
     s.setValue(p + QStringLiteral("channel"),        cfg.channel);
     s.setValue(p + QStringLiteral("subtype"),        cfg.subtype);
     s.setValue(p + QStringLiteral("mainResolution"), cfg.mainResolution);

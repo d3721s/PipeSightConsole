@@ -3,12 +3,9 @@
 - PTZ 移动状态：PanTilt/Zoom `IDLE`
 - 当前图像参数：亮度、饱和度、对比度、锐度、IR Cut、WDR
 - 当前视频编码状态：编码格式、分辨率、帧率、码率、GOP、质量
-- 当前 Profile 列表：`Profile000/001/100/101`
 - 当前 OSD 列表和位置：`OSDTIME000/OSDTIME100`
-- 当前音频输入/输出 token
 - 当前网络接口状态：`eth0`、`wlan0`、IP、DHCP、MTU
 - 当前系统时间、时区
-- 当前用户列表
 
 **2. 控制命令**
 - PTZ 绝对移动：`AbsoluteMove`
@@ -20,8 +17,6 @@
 - PTZ 预置巡航启动/停止：`PresetTour Start/Stop`
 - 抓图：`GetSnapshotUri` 后访问图片 URL
 - 拉流：`GetStreamUri` 后播放 RTSP
-- 事件订阅：`CreatePullPointSubscription`
-- 拉取事件：`PullMessages`
 
 **3. 设定值**
 - 图像亮度：`0-100`
@@ -35,9 +30,6 @@
 - PTZ Timeout：`PT1S-PT10S`
 - OSD 位置：Custom `x/y`
 - OSD 时间格式、日期格式
-- 移动侦测灵敏度：当前 `60`
-- 移动侦测阈值：`MinCount=32`
-- 移动侦测延迟：`AlarmOnDelay=1000`、`AlarmOffDelay=1000`
 
 **4. 配置参数**
 - 视频编码：H.264 / H.265
@@ -55,44 +47,11 @@
 - H.264 Profile：`Baseline / Main / High`
 - H.265 Profile：`Main`
 - CBR/VBR：支持 `ConstantBitRate`
-- Profile 配置：视频源、视频编码、音频、分析、PTZ、Metadata 绑定关系
+- Profile 配置：视频源、视频编码、音频、PTZ
 - 音频编码：G711/AAC 或 PCMU/MP4A-LATM
 - 音频码率：`64 kbps`
 - 音频采样率：`16 kHz`
 - 组播参数：地址、端口、TTL、AutoStart
 - OSD 数量限制：最多 3 个
 - OSD 类型：Plain / DateAndTime
-- 移动侦测网格：`22 x 18`
-- 移动侦测区域：`ActiveCells`
-- 网络协议配置：HTTP `80`、RTSP `554`
 - 网络接口配置：DHCP/静态 IP、MTU
-
-**5. 报警/故障**
-- MotionAlarm
-- Motion
-- Tamper
-- DigitalInput 主题存在，但设备能力里 `DigitalInputs=0`
-- ImagingService 状态事件
-- ProfileChanged
-- ConfigurationChanged
-- PullPoint 订阅过期/无效会返回 `Resource Unknown`
-- `GetSerialPorts` 返回 `NotImplemented`
-- `GetVideoOutputs` 返回 `NotImplemented`
-- `GetDigitalInputs` 返回 `Unknown Error`
-- `GetSystemUris` 返回 `NotImplemented`
-- `Imaging/GetStatus` 返回 `NotImplemented`
-
-**6. 诊断/维护信息**
-- 厂商：`LC`
-- 型号：`LC-TA4D-H10M0S`
-- 固件版本：`3.11.0000000.1.R 2026-04-09`
-- 序列号：`C30A1CDPSF08A11`
-- 硬件版本：`1.00`
-- 主机名：`NOMI-IPC-LC-TA4D-H10M0S-8A11`
-- ONVIF 服务列表和 XAddr
-- ONVIF 支持版本
-- 设备能力：Media、Media2、PTZ、Events、Analytics、Imaging、DeviceIO
-- 安全能力：UsernameToken、HTTP Digest
-- 最大用户数：`20`
-- 用户名/密码最大长度：`31`
-- 固件升级能力：`FirmwareUpgrade=true`、`HttpFirmwareUpgrade=true
